@@ -40,4 +40,3 @@ https://github.com/junegunn/fzf
 
 https://github.com/sharkdp/fd
 
-# TODO: vimrc
