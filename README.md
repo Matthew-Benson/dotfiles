@@ -30,11 +30,5 @@ Install meslo-nerd and configure for Linux/MacOS:
 
 https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k
 
-### Theme
-
-https://github.com/romkatv/powerlevel10k#oh-my-zsh
-
-## Plugins
-
-https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh
+Plugins and oh-my-zsh are managed by chezmoi, but versions for releases in the config may need updated from time to time.
 
