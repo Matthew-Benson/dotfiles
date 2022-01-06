@@ -32,3 +32,6 @@ https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel1
 
 Plugins and oh-my-zsh are managed by chezmoi, but versions for releases in the config may need updated from time to time.
 
+# TODO: vimrc
+# TODO: fzf
+# TODO: fd for fzf to skip ignored files

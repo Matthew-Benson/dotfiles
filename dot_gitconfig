@@ -1,0 +1,5 @@
+[user]
+	name = Matt Benson
+	email = matthew.benson.developer@gmail.com
+[pull]
+	rebase = false
