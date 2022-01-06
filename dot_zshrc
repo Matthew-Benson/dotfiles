@@ -42,7 +42,7 @@ if [[ $OSTYPE == darwin* ]]; then
   bindkey "ç" fzf-cd-widget # bind "ALT-C" for MacOS fzf
   PATH="$HOME/Library/Python/3.7/bin:${PATH}" # python 3 packages from pip are here
   PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:${PATH}"
-  
+
   # add mysql command line utilities from MySQL Workbench
   PATH=$PATH:/Applications/MySQLWorkbench.app/Contents/MacOS
 
@@ -51,26 +51,26 @@ if [[ $OSTYPE == darwin* ]]; then
 
   # add personal snippets to path
   PATH="$HOME/Projects/snippets":"$PATH"
+
+  alias pip="/usr/bin/pip3"
+
+  # https://www.jenv.be/
+  # load jenv path for java version management
+  PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
+  # NOTE: added AdoptOpenJDK 8 to jenv
 fi
 
 source $ZSH/oh-my-zsh.sh
 
 # aliases
 alias ll="ls -lahG"
-# TODO: should we be using pyenv?
 # Set python 3 as our default python interpreter - seems this python is included from xcode tools
 alias python="/usr/bin/python3"
-alias pip="/usr/bin/pip3"
 
 # general requirement for bash completion
 autoload -U +X compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
-
-# https://www.jenv.be/
-# load jenv path for java version management
-PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init -)"
-# NOTE: added AdoptOpenJDK 8 to jenv
 
 # load golang bin path
 PATH="$HOME/go/bin:$PATH"
