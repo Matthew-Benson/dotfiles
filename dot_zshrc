@@ -31,7 +31,9 @@ export KUBECONFIG=$HOME/.kube/config # set kubeconfig file location to control c
 NVM_LAZY=1 # start nvm when calling node, npm, yarn, or nvm
 # NVM_AUTOLOAD=1 # load nvm when a .nvmrc file is in current directory (will call nvm on directory load)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ffffff,bold,underline"
-bindkey "ç" fzf-cd-widget # bind "ALT-C" for MacOS
+if [[ $OSTYPE == darwin* ]]; then
+  bindkey "ç" fzf-cd-widget # bind "ALT-C" for MacOS
+fi
 
 source $ZSH/oh-my-zsh.sh
 
