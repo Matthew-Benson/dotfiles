@@ -67,6 +67,9 @@ source $ZSH/oh-my-zsh.sh
 alias ll="ls -lahG"
 # Set python 3 as our default python interpreter - seems this python is included from xcode tools
 alias python="/usr/bin/python3"
+if command -v fdfind &> /dev/null; then
+  alias fd="fdfind"
+fi 
 
 # general requirement for bash completion
 autoload -U +X compinit && compinit
