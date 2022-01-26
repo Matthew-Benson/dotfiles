@@ -13,9 +13,9 @@ fi
 # See example in .zshrc
 function add_completions () {
   if [[ ! -d "$ZSH/completions" || ! -f "$ZSH/completions/_$1" ]]; then
-    mkdir -pv $ZSH/completions
+    mkdir -p $ZSH/completions
     $@ > $ZSH/completions/_$1
-    echo "$1 added completions: $@ > $ZSH/completions/_$1"
+    # echo "$1 added completions: $@ > $ZSH/completions/_$1"
   fi
 }
 
@@ -86,13 +86,6 @@ alias ll="ls -lahG"
 # Set python 3 as our default python interpreter - seems this python is included from xcode tools
 alias python="/usr/bin/python3"
 
-# general requirement for bash completion
-autoload -U +X compinit && compinit
-autoload -U +X bashcompinit && bashcompinit
-
-# Add completions for non-plugin common commands.
-add_completions chezmoi completion zsh
-
 # load golang bin path
 PATH="$HOME/go/bin:$PATH"
 export GOPATH="$HOME/go"
@@ -114,6 +107,12 @@ export PATH
 
 # hide user@location on command line
 # prompt_context(){}
+
+# general requirement for bash completion
+autoload -U +X compinit && compinit
+autoload -U +X bashcompinit && bashcompinit
+# Add completions for non-plugin common commands.
+add_completions chezmoi completion zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
