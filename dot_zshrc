@@ -7,6 +7,18 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Custom functions:
+# TODO: move custom functions to separate helper script
+# Accepts full command to generate command completions file.
+# See example in .zshrc
+function add_completions () {
+  if [[ ! -d "$ZSH/completions" || ! -f "$ZSH/completions/_$1" ]]; then
+    mkdir -pv $ZSH/completions
+    $@ > $ZSH/completions/_$1
+    echo "$1 added completions: $@ > $ZSH/completions/_$1"
+  fi
+}
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -32,8 +44,8 @@ NVM_LAZY=1 # start nvm when calling node, npm, yarn, or nvm
 # NVM_AUTOLOAD=1 # load nvm when a .nvmrc file is in current directory (will call nvm on directory load)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ffffff,bold,underline"
 
-# Any new environments (including dev containers) will depend on both fzf and fd being installed and in path
-# Configure fd to ignore .gitignore files
+# Any new environments (including dev containers) will depend on both fzf and fd being installed and in path.
+# Configure fd to ignore .gitignore files. alias fdfind to fd if it's installed. (same program different name)
 if command -v fdfind &> /dev/null; then
   alias fd="fdfind"
   export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git'
@@ -77,6 +89,9 @@ alias python="/usr/bin/python3"
 # general requirement for bash completion
 autoload -U +X compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
+
+# Add completions for non-plugin common commands.
+add_completions chezmoi completion zsh
 
 # load golang bin path
 PATH="$HOME/go/bin:$PATH"
