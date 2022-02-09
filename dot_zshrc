@@ -7,18 +7,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Custom functions:
-# TODO: move custom functions to separate helper script
-# Accepts full command to generate command completions file.
-# See example in .zshrc
-function add_completions () {
-  if [[ ! -d "$ZSH/completions" || ! -f "$ZSH/completions/_$1" ]]; then
-    mkdir -p $ZSH/completions
-    $@ > $ZSH/completions/_$1
-    # echo "$1 added completions: $@ > $ZSH/completions/_$1"
-  fi
-}
-
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -39,74 +27,22 @@ plugins=(
 )
 
 # Plugin settings are set before oh-my-zsh is sourced
+DISABLE_AUTO_UPDATE="true" # updates managed by chezmoi
 export KUBECONFIG=$HOME/.kube/config # set kubeconfig file location to control cluster from this machine
 NVM_LAZY=1 # start nvm when calling node, npm, yarn, or nvm
 # NVM_AUTOLOAD=1 # load nvm when a .nvmrc file is in current directory (will call nvm on directory load)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ffffff,bold,underline"
 
-# Any new environments (including dev containers) will depend on both fzf and fd being installed and in path.
-# Configure fd to ignore .gitignore files. alias fdfind to fd if it's installed. (same program different name)
-if command -v fdfind &> /dev/null; then
-  alias fd="fdfind"
-  export FZF_DEFAULT_COMMAND='fdfind --type f --hidden --follow --exclude .git'
-elif command -v fd &> /dev/null; then
-  export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-fi
-# To apply the command to CTRL-T as well
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
-# MacOS Specific config
-if [[ $OSTYPE == darwin* ]]; then
-  bindkey "ç" fzf-cd-widget # bind "ALT-C" for MacOS fzf
-  PATH="$HOME/Library/Python/3.7/bin:${PATH}" # python 3 packages from pip are here
-  PATH="/Applications/Visual Studio Code.app/Contents/Resources/app/bin:${PATH}"
-
-  # add mysql command line utilities from MySQL Workbench
-  PATH=$PATH:/Applications/MySQLWorkbench.app/Contents/MacOS
-
-  # add cmake to path - this was installed via dmg from their downloads
-  PATH="/Applications/CMake.app/Contents/bin":"$PATH"
-
-  # add personal snippets to path
-  PATH="$HOME/Projects/snippets":"$PATH"
-
-  alias pip="/usr/bin/pip3"
-
-  # https://www.jenv.be/
-  # load jenv path for java version management
-  PATH="$HOME/.jenv/bin:$PATH"
-  eval "$(jenv init -)"
-  # NOTE: added AdoptOpenJDK 8 to jenv
-fi
-
 source $ZSH/oh-my-zsh.sh
 
-# aliases
-alias ll="ls -lahG"
-# Set python 3 as our default python interpreter - seems this python is included from xcode tools
-alias python="/usr/bin/python3"
-
-# load golang bin path
-PATH="$HOME/go/bin:$PATH"
-export GOPATH="$HOME/go"
-
-# load rust bin path
-PATH="$HOME/.cargo/bin:$PATH"
-
-# add personal binaries to path
-PATH="$HOME/bin":"$PATH"
-
-# Journaling shortcuts
-J=$HOME/Projects/personal/journal
-alias journal="mkdir -p $J/$(date +'%Y/%m') && code $J/$(date +'%Y/%m/%Y-%m-%d.md')"
+# load zsh configs and helper scripts
+for conf in "$HOME/.config/zsh/config.d/"*.zsh; do
+  source "${conf}"
+done
+unset conf
 
 export REPO="git@gitlab.mattbensondev.com:322" # work gitlab shortcut
-
-# make path additions accessible to any outsite program
-export PATH
-
-# hide user@location on command line
-# prompt_context(){}
+export PATH # make path additions accessible to any outsite program
 
 # general requirement for bash completion
 autoload -U +X compinit && compinit
