@@ -6,3 +6,5 @@ alias python="/usr/bin/python3"
 J=$HOME/Projects/personal/journal
 alias journal="mkdir -p $J/$(date +'%Y/%m') && code $J/$(date +'%Y/%m/%Y-%m-%d.md')"
 
+alias install_toolbox="prompt_install bazel ~/.config/zsh/installs/bazelisk.zsh"
+

@@ -7,7 +7,7 @@ else
   DOWNLOAD_URL="https://github.com/bazelbuild/bazelisk/releases/latest/download/bazelisk-linux-amd64"
 fi
 
-curl "${DOWNLOAD_URL}" -o bazelisk
+curl -L "${DOWNLOAD_URL}" -o bazelisk
 chmod +x bazelisk
 sudo mv bazelisk /usr/local/bin/bazel
 

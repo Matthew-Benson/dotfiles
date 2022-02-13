@@ -7,6 +7,9 @@ To bring this configuration to a new system, use chezmoi
 sh -c "$(curl -fsLs git.io/chezmoi)" -- init --apply matthew-benson
 ```
 
+To install additional helper tools after chezmoi loads, run `install_toolbox`
+for programs like bazel.
+
 or Windows
 
 ```powershell
@@ -35,6 +38,8 @@ Plugins and oh-my-zsh are managed by chezmoi, but versions for releases in the c
 ### Dependencies
 
 Install fzf and fd to find/search with hotkeys and good default file ignores
+
+<!-- TODO: we can now install fzf and fd via install_toolbox command -->
 
 https://github.com/junegunn/fzf
 

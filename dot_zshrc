@@ -44,9 +44,6 @@ unset conf
 export REPO="git@gitlab.mattbensondev.com:322" # work gitlab shortcut
 export PATH # make path additions accessible to any outsite program
 
-# install prompts for various helpful programs
-prompt_install bazel ~/.config/zsh/installs/bazelisk.zsh
-
 # general requirement for bash completion
 autoload -U +X compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
