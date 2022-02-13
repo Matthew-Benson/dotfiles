@@ -1,7 +1,7 @@
 # Custom functions:
 # Accepts full command to generate command completions file.
 # See example in .zshrc
-function add_completions () {
+add_completions () {
   if [[ ! -d "$ZSH/completions" || ! -f "$ZSH/completions/_$1" ]]; then
     mkdir -p $ZSH/completions
     $@ > $ZSH/completions/_$1
@@ -9,3 +9,35 @@ function add_completions () {
   fi
 }
 
+# prompt for install if command not found, and call
+# provided install script from 2nd parameter.
+prompt_install () {
+  readonly COMMAND=${1:?"The command must be specified."}
+  readonly INSTALL_FUNC=${2:?"The install script must be specified."}
+  IGNORE_FILE=$HOME/.config/zsh/installs/ignore.txt
+
+  if type "${COMMAND}" >/dev/null 2>&1; then
+    return 0 # if command installed, no need to prompt
+  fi
+
+  if grep -q "${COMMAND}" $IGNORE_FILE; then
+    return 0 # install prompt already ignored
+  fi
+
+  # TODO: chezmoi status
+
+  while read "CHOICE?Would you like to install ${COMMAND}? [yes, no, never] "; do
+    case $CHOICE in
+      yes)
+        $INSTALL_FUNC
+        break;;
+      no)
+        break;;
+      never)
+        echo "${COMMAND}" >>$IGNORE_FILE
+        break;;
+      *)
+        echo "unknown option";;
+    esac
+  done
+}
