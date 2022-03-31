@@ -1,5 +1,6 @@
 # load golang bin path
 PATH="$HOME/go/bin:$PATH"
+PATH="/usr/local/go/bin:$PATH"
 export GOPATH="$HOME/go"
 
 # load rust bin path

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 DOWNLOAD_URL=""
 if [[ $OSTYPE == darwin* ]]; then

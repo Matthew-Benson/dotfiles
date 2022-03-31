@@ -1,4 +1,16 @@
 # Custom functions:
+
+# TODO: can we create source order or something? This has to load first if we want to use joinByString in aliases?
+
+# https://dev.to/meleu/how-to-join-array-elements-in-a-bash-script-303a
+joinByString() {
+  local separator="$1"
+  shift
+  local first="$1"
+  shift
+  printf "%s" "$first" "${@/#/$separator}"
+}
+
 # Accepts full command to generate command completions file.
 # See example in .zshrc
 add_completions () {
@@ -20,7 +32,7 @@ prompt_install () {
     return 0 # if command installed, no need to prompt
   fi
 
-  if grep -q "${COMMAND}" $IGNORE_FILE; then
+  if grep -qs "${COMMAND}" $IGNORE_FILE; then
     return 0 # install prompt already ignored
   fi
 
