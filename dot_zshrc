@@ -29,7 +29,8 @@ plugins=(
 # Plugin settings are set before oh-my-zsh is sourced
 DISABLE_AUTO_UPDATE="true" # updates managed by chezmoi
 export KUBECONFIG=$HOME/.kube/config # set kubeconfig file location to control cluster from this machine
-NVM_LAZY=1 # start nvm when calling node, npm, yarn, or nvm
+# start nvm when calling node, npm, yarn, or nvm
+zstyle ':omz:plugins:nvm' lazy yes
 # NVM_AUTOLOAD=1 # load nvm when a .nvmrc file is in current directory (will call nvm on directory load)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ffffff,bold,underline"
 
