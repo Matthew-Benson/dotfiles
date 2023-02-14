@@ -8,4 +8,5 @@ PATH="$HOME/.cargo/bin:$PATH"
 
 # add personal binaries to path
 PATH="$HOME/bin":"$PATH"
-
+PATH="$HOME/Applications:$PATH"
+PATH="$HOME/.local/bin:$PATH"
