@@ -10,3 +10,6 @@ PATH="$HOME/.cargo/bin:$PATH"
 PATH="$HOME/bin":"$PATH"
 PATH="$HOME/Applications:$PATH"
 PATH="$HOME/.local/bin:$PATH"
+
+# add CLI paths for cloud providers
+PATH="/usr/local/google-cloud-sdk/bin:$PATH"
