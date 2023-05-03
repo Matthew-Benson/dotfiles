@@ -17,3 +17,8 @@ INSTALL_PROMPT+=("prompt_install buildifier ${INSTALL_SCRIPTS_DIR}/buildifier.zs
 INSTALL_PROMPT+=("prompt_install buildozer ${INSTALL_SCRIPTS_DIR}/buildozer.zsh")
 INSTALL_PROMPT+=("prompt_install unused_deps ${INSTALL_SCRIPTS_DIR}/unused_deps.zsh")
 alias install_toolbox="$(joinByString ' && ' $INSTALL_PROMPT)"
+
+# if podman is installed, alias docker=podman
+if command -v podman &> /dev/null; then
+    alias docker="podman"
+fi
