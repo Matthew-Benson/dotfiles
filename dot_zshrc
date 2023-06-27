@@ -39,8 +39,8 @@ source $ZSH/oh-my-zsh.sh
 # load zsh configs and helper scripts
 CONFIG_DIR="$HOME/.config/zsh/config.d"
 source "${CONFIG_DIR}/functions.zsh"
-source "${CONFIG_DIR}/aliases.zsh"
 source "${CONFIG_DIR}/path.zsh"
+source "${CONFIG_DIR}/aliases.zsh"
 source "${CONFIG_DIR}/macos.zsh"
 source "${CONFIG_DIR}/fzf.zsh"
 
