@@ -6,6 +6,9 @@ export GOPATH="$HOME/go"
 # load rust bin path
 PATH="$HOME/.cargo/bin:$PATH"
 
+export DENO_INSTALL="$HOME/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
+
 # add personal binaries to path
 PATH="$HOME/bin":"$PATH"
 PATH="$HOME/Applications:$PATH"

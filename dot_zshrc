@@ -52,6 +52,7 @@ autoload -U +X compinit && compinit
 autoload -U +X bashcompinit && bashcompinit
 # Add completions for non-plugin common commands.
 add_completions chezmoi completion zsh
+add_completions deno completions zsh
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
