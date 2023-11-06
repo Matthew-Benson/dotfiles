@@ -6,6 +6,8 @@
 <!-- TODO: add SSH keys, etc. from 1Password -->
 <!-- TODO: http://fig.io ? -->
 <!-- TODO: headings? -->
+<!-- TODO: set default login shell? Link to a doc? -->
+<!-- TODO: tmux config? Can we set a better moderning scrolling option? -->
 
 Personal dotfiles configurations for Linux, MacOS, and Windows for terminals and other configurables.
 
@@ -15,15 +17,7 @@ To bring this configuration to a new system, use [chezmoi](https://www.chezmoi.i
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply matthew-benson
 ```
 
-See also: [chezmoi quick start guide](https://www.chezmoi.io/quick-start/).
-
-<!-- TODO: set default login shell? Link to a doc? -->
-<!-- TODO: tmux config? Can we set a better moderning scrolling option? -->
-
-To install additional helper tools after chezmoi loads, run `install_toolbox`
-for programs like bazel.
-
-or Windows
+On Windows:
 
 ```powershell
 # To install in ./bin
@@ -36,7 +30,9 @@ or Windows
 '$params = "-?"', (iwr https://git.io/chezmoi.ps1).Content | powershell -c -
 ```
 
-See https://www.chezmoi.io/docs/install/
+See https://www.chezmoi.io/docs/install/ for more.
+
+See also: [chezmoi quick start guide](https://www.chezmoi.io/quick-start/).
 
 ## Linux/MacOS ZSH Theme
 
@@ -48,14 +44,12 @@ https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel1
 
 Plugins and oh-my-zsh are managed by chezmoi, but versions for releases in the config may need updated from time to time.
 
-### Dependencies
+## Dependencies
 
 <!-- TODO: scrap toolbox/install tooling, write playbooks. Tool infrequent to automate and keep working. No tests, etc. -->
 <!-- there's also a chance we use templates and some other chezmoi features? -->
 
 Install fzf and fd to find/search with hotkeys and good default file ignores
-
-<!-- TODO: we can now install fzf and fd via install_toolbox command -->
 
 https://github.com/junegunn/fzf
 

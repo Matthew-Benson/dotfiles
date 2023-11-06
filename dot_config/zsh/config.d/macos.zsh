@@ -1,3 +1,5 @@
+# TODO: migrate me to chezmoi templates
+
 # MacOS Specific config
 if [[ $OSTYPE == darwin* ]]; then
   bindkey "ç" fzf-cd-widget # bind "ALT-C" for MacOS fzf
@@ -21,4 +23,3 @@ if [[ $OSTYPE == darwin* ]]; then
   eval "$(jenv init -)"
   # NOTE: added AdoptOpenJDK 8 to jenv
 fi
-
