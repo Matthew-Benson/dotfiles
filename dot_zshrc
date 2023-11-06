@@ -43,6 +43,7 @@ source "${CONFIG_DIR}/path.zsh"
 source "${CONFIG_DIR}/aliases.zsh"
 source "${CONFIG_DIR}/macos.zsh"
 source "${CONFIG_DIR}/fzf.zsh"
+source "${CONFIG_DIR}/gcloud.zsh"
 
 export REPO="git@gitlab.mattbensondev.com:322" # work gitlab shortcut
 export PATH # make path additions accessible to any outsite program
