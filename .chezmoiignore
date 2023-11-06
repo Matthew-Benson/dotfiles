@@ -1,0 +1,5 @@
+.oh-my-zsh
+.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+.oh-my-zsh/custom/plugins/zsh-autosuggestions
+.oh-my-zsh/custom/themes/powerlevel10k
+
