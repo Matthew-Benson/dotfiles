@@ -1,13 +1,12 @@
 # dotfiles
 
-<!-- TODO: update to be in-line with doc standards - missing too many fine details and even common action playbooks -->
 <!-- TODO: change macos specific config to use chezmoi templates https://www.chezmoi.io/user-guide/templating and doc this -->
-<!-- TODO: improve portability? Create suitable environments for dash, ash, bash, zsh, fish, powershell? -->
 <!-- TODO: add SSH keys, etc. from 1Password -->
-<!-- TODO: http://fig.io ? -->
-<!-- TODO: headings? -->
 <!-- TODO: set default login shell? Link to a doc? -->
 <!-- TODO: tmux config? Can we set a better moderning scrolling option? -->
+<!-- TODO: remove and re-add things? Seems they've changed naming convention in chezmoi. -->
+<!-- TODO: zsh's config.d should have been conf.d -->
+<!-- TODO: fzf/fd integration with fish -->
 
 Personal dotfiles configurations for Linux, MacOS, and Windows for terminals and other configurables.
 
