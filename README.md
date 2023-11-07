@@ -4,8 +4,6 @@
 <!-- TODO: add SSH keys, etc. from 1Password -->
 <!-- TODO: set default login shell? Link to a doc? -->
 <!-- TODO: tmux config? Can we set a better moderning scrolling option? -->
-<!-- TODO: remove and re-add things? Seems they've changed naming convention in chezmoi. -->
-<!-- TODO: zsh's config.d should have been conf.d -->
 <!-- TODO: fzf/fd integration with fish -->
 
 Personal dotfiles configurations for Linux, MacOS, and Windows for terminals and other configurables.

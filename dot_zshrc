@@ -37,7 +37,7 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ffffff,bold,underline"
 source $ZSH/oh-my-zsh.sh
 
 # load zsh configs and helper scripts
-CONFIG_DIR="$HOME/.config/zsh/config.d"
+CONFIG_DIR="$HOME/.config/zsh/conf.d"
 source "${CONFIG_DIR}/functions.zsh"
 source "${CONFIG_DIR}/path.zsh"
 source "${CONFIG_DIR}/aliases.zsh"
