@@ -1,0 +1,150 @@
+syntax = "proto3";
+
+enum RepoType {
+    GIT = 0;
+    // TODO: SVN? Sapling? Look at OpenGrok and use their supported REPOs
+}
+
+// TODO: do we actually need these now?
+enum PackageManager {
+    // TODO: look at a reasonable list of package managers
+    APT = 0;
+    HOMEBREW = 1;
+    NIX = 2;
+}
+
+// TODO: match chezmoi platforms and golang platforms
+enum Platform {
+    // TODO: SO platform needs three values
+    // OS
+    // Operating system, e.g. darwin, linux, etc. as returned by 
+    // [runtime.GOOS](https://pkg.go.dev/runtime?tab=doc#pkg-constants)
+    string operating_system = 1;
+    // Architecture, e.g. amd64, arm, etc. as returned by
+    // [runtime.GOARCH](https://pkg.go.dev/runtime?tab=doc#pkg-constants)
+    string architecture = 2;
+    // Distribution, e.g. debian, rocky, arch, etc. TODO: returned by what?
+    string distribution = 3;
+    // TODO: how to manage this? debian 12? windows 11? should distro be a message with a name and version?
+    // on Debian at least, this is VERSION_ID in the etc/os-release file.
+    string version = 4;
+    // distribution which thing - i.e. debian vs arch vs etc...
+    // distro version ??
+}
+
+// TODO: match chezmoi architecture and golang
+enum Architecture {
+    
+}
+
+// TODO: this isn't really a version anymore, but a dependency? Thing? Target? Install? Installation?
+//       external...? release? package? external_data? external_installable
+// TODO: not sure what's needed
+// TODO: make sure to doc - do doc comments always go above field?
+message ExternalInstallable {
+    // Name is a unique identifier for this installable. Installables can depend on others being
+    // installed first, and this dependency graph is built based on name. If two installables share
+    // a name, the installer will return an error.
+    string name = 1;
+    // string version = 2;
+
+    // TODO: move version to platorm_installables which is repeated
+
+    message PlatformInstallable {
+        // Version can be semver or any other versioning scheme that installables use.
+        // This can also not matter for some platforms. For instance, for packages managed
+        // by the apt package manager, if version is provided, there's not much to do with
+        // it when installing and updating packages. Note that if this is unset, 
+        // the installable will always attempt to be installed/updated by the installer.
+        // This is potentially expensive, so always set version when possible.
+        optional string version = 1;
+        
+        // TODO: comment - this should be 1 actually - flip these
+        Platform platform = 2;
+        // TODO: comment - default is empty
+        repeated string dependencies = 3;
+
+        // TODO: the THING that makes us install this installable. Could be a bash command,
+        // could point to a script file, could be some other executable. Need to document
+        // behavior for different platforms - default for Windows is ... but default for
+        // everything else is some kind of /bin/sh -c "..."?
+        // Need to document sudo behavior. Obviously lots of things here will need sudo
+        // for install, but we don't want to run this wrapper as sudo!
+        // This command will be executed directly with Go's os.exec https://pkg.go.dev/os/exec
+        // which intentionally does not invoke the system shell.
+        // OH maybe this needs to be a list actually to support cmd := exec.Command("/bin/sh", "-c", "sudo find ...")
+        // for sudo support? But we need to stream all pipes back to user if executing in parallel?
+        string install_command = 4;
+
+        string update_command = 5;
+
+        string uninstall_command = 6;
+
+        string get_version_command = 7;
+    }
+
+    // TODO: comment - default is empty so behavior needs documented for that case.
+    repeated PlatformInstallable platforms = 2;
+
+    // string version - something like semver? Not everything uses semver?
+    // map[platform -> install-type (download/package-manager/etc.)] ?
+    // map[platform -> url] ? no, this doesn't account for packages?
+    // map[platform -> package manager + name] ?
+    // shasum IF APPLICABLE
+    // TODO: surely more things we care about. Maybe see bazel rules_http?
+    // OS install Oneof vs map vs listing all the install options?
+
+    message SourceRepository {
+        string url = 1;
+        RepoType type = 2;
+        // TODO: revision? tag? branch?
+        // TODO: commit depth? ?
+    }
+
+    message Package {
+        string name = 1;
+        PackageManager package_manager = 2;
+    }
+
+    message Artifact {
+        string url = 1;
+        // TODO: oneof? enum? prob enum
+        // if true, the artifact to download is a binary and can be directly
+        // downloaded and placed in the PATH at an appropriate location.
+        bool binary = 2;
+        // if true, the artifact is an archive and should be extracted
+        // and handled appropriately for installation.
+        bool archive = 3;
+        optional string shasum = 4; // TODO: ?
+    }
+
+    // message InstallableTarget {
+    //     oneof
+    // }
+    message InstallableTarget {
+        oneof target {
+            SourceRepository source_repository = 1;
+            Artifact artifact = 2;
+            Package package = 3;
+        }
+    }
+
+    // TODO: key has to be some parsable <os-arch> kind of string
+    map<string, InstallableTarget> installable_targets = 3;
+}
+
+// map<os, Install?> installs = 1;
+
+// TODO: map cannot use enum key, so we need to comment on the proto field
+//       what values chezmoi can give in a template.
+// Version {
+//     name: fzf
+//     version: 1.0.0
+//     installs: {
+//         debian: {
+//             type: git_repo
+//             // TODO: oneof Repo (url, type), Package (name, manager), binary (url)
+//             url:  http://github.com/owner/fzf
+//         }
+//     }
+// }

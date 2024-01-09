@@ -1,0 +1,36 @@
+#!/usr/bin/env sh
+
+# versions.txtpb hash: {{ include ".chezmoiscripts/external_installables/scripts/fzf/versions.txtpb" | sha256sum }}
+
+source "{{ joinPath .chezmoi.sourceDir .chezmoiscripts/external_installables/helper.sh }}"
+
+# TODO: rename .tmpl.sh instead? Maybe better language recognition? Update anywhere documented?
+# TODO: add shellcheck to github actions for dotfiles
+# TODO: execute wrapper script and pass some realpaths and helpful info
+# TODO: root installs vs user installs? Make configurable?
+export CHEZMOI="{{ .chezmoi.executable }}"
+
+PB="{{ joinPath .chezmoi.sourceDir ".chezmoiscripts/external_installables/scripts/fzf/versions.txtpb" }}"
+
+{{ if eq .chezmoi.os "darwin" }}
+echo "fzf darwin OS install not defined. See: {{ joinPath .chezmoi.sourceDir .chezmoi.sourceFile }}"
+{{ else if eq .chezmoi.os "linux" }}
+INSTALL="{{ joinPath .chezmoi.sourceDir ".chezmoiscripts/external_installables/scripts/fzf/install.sh" }}"
+UPGRADE="{{ joinPath .chezmoi.sourceDir ".chezmoiscripts/external_installables/scripts/fzf/upgrade.sh" }}"
+{{ else }}
+echo "fzf unknown OS install not defined. See: {{ joinPath .chezmoi.sourceDir .chezmoi.sourceFile }}"
+{{ end }}
+
+# UHH actually this arch doesn't work because only THIS script will execute as a template!
+# SO what we actually need to define is not a wrapper, but a helper lib that we can source from.
+# SO install and upgrade need to be functions defined here with templating?
+
+# ./wrapper.sh "$PB"
+
+install_or_upgrade "$CHEZMOI" "$PB" "$INSTALL" "$UPGRADE"
+
+# parse
+# setenvs
+# check state
+# install
+# write

@@ -1,0 +1,22 @@
+# proto-file: ../external_installable.proto
+# proto-message: ExternalInstallable
+
+name: "fzf"
+version: "0.43.0"
+
+installable_targets: [
+    # TODO: chezmoi os key?
+    {
+        key: "debian"
+        value: {
+            target: {
+                artifact: {
+                    url: "https://github.com/junegunn/fzf/releases/download/0.43.0/fzf-0.43.0-linux_amd64.tar.gz"
+                    # TODO: enum for this!
+                    type: BINARY
+                    shasum: "todo:"
+                }
+            }
+        }
+    }
+]
