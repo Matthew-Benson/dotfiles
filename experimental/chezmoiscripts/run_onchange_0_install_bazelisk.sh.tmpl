@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+
+set -e
+
+# Install bazelisk binary from GitHub releases. This will forceably overwrite
+# /usr/local/bin/bazel, so be sure not to put anything in that path you
+# may want to keep!
+# Making changes to this file will cause it to run on the next $ chezmoi apply
+# So to update bazelisk version, simply change the following line and apply.
+BAZELISK_VERSION="v1.19.0"
+
+URL="https://github.com/bazelbuild/bazelisk/releases/download/${BAZELISK_VERSION}/bazelisk-{{ .chezmoi.os }}-{{ .chezmoi.arch }}"
+OUT_DIR="/tmp/chezmoi"
+
+echo "Downloading Bazelisk from ${URL}"
+
+{{ if eq .chezmoi.os "windows" }}
+echo "windows unsupported - need to create some run_onchange_0_install_git.ps1.tmpl - git for windows bundles Bash IIRC."
+echo "beyond that, need to make some decisions about how/where to manage binaries on windows."
+{{ else }}
+curl -LO --create-dirs "$URL" --output-dir "$OUT_DIR"
+chmod +x "${OUT_DIR}/bazelisk-linux-amd64"
+sudo mv "${OUT_DIR}/bazelisk-linux-amd64" /usr/local/bin/bazelisk
+sudo ln -sf /usr/local/bin/bazelisk /usr/local/bin/bazel
+{{ end }}
+
