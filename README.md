@@ -60,6 +60,15 @@ Typically, install via the following.
 sh -c "$(curl -fsLS get.chezmoi.io/lb)" -- init --apply matthew-benson
 ```
 
+Also create `chezmoi.toml` config file that cannot be managed by chezmoi:
+
+```sh
+cat <<EOF > $HOME/.config/chezmoi/chezmoi.toml
+[diff]
+    exclude = ["externals"]
+EOF
+```
+
 On Windows:
 
 ```powershell
