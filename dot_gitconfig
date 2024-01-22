@@ -1,6 +1,8 @@
 [user]
 	name = Matt Benson
 	email = matthew.benson.developer@gmail.com
+[init]
+	defaultBranch = "main"
 [pull]
 	rebase = false
 [push]
