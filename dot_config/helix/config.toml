@@ -1,2 +1,7 @@
+# TODO: can we reconfigure SSH in a way that this isn't needed? Currently colors are wrong over SSH.
+# https://github.com/helix-editor/helix/discussions/6963
+[editor]
+true-color = true
+
 [editor.soft-wrap]
 enable = true
