@@ -1,0 +1,5 @@
+# sapling repo directory
+.sl/
+
+# jujutsu repo directory
+.jj/
