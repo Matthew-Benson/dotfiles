@@ -1,3 +1,6 @@
 [user]
 name = "Matt Benson"
 email = "matthew.benson.developer@gmail.com"
+
+[ui]
+editor = "hx"
