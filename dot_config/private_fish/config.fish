@@ -4,4 +4,7 @@ if status is-interactive
     # Commands to run in interactive sessions can go here
     starship init fish | source
 end
-eval "$(/opt/homebrew/bin/brew shellenv)"
+
+if test -x /opt/homebrew/bin/brew
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+end
