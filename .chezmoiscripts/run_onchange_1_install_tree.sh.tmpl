@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+set -e
+
+# by default chezmoi scripts run in the home directory, but we need to execute in repo
+cd "{{ .chezmoi.sourceDir }}/installer"
+
+# Making changes to this file will cause it to run on the next $ chezmoi apply
+# So to update tree version, simply change the following line and apply.
+TREE_VERSION="v2.1.0"
+
+echo "here?"
+pwd
+
+# TODO: which bazel? Where does this execute from/will it respect .bazelversion?
+bazel run install_tree -- --version="$TREE_VERSION"
