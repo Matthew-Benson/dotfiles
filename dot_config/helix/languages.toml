@@ -1,0 +1,4 @@
+[[language]]
+name = "starlark"
+auto-format = true
+formatter = { command = "buildifier" }
