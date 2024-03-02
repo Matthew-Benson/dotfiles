@@ -1,0 +1,4 @@
+sh_binary(
+    name = "install_tree",
+    srcs = ["install_tree.fish"],
+)
