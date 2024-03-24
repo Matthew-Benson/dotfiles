@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 3,
-  "moduleFileHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "moduleFileHash": "a796c2dbced093b012f25da2aa76571a6759f1c9588c59166e41c07e66764a17",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -17,16 +17,173 @@
   },
   "moduleDepGraph": {
     "<root>": {
-      "name": "",
+      "name": "installer",
       "version": "",
       "key": "<root>",
-      "repoName": "",
+      "repoName": "installer",
       "executionPlatformsToRegister": [],
       "toolchainsToRegister": [],
-      "extensionUsages": [],
+      "extensionUsages": [
+        {
+          "extensionBzlFile": "@rules_nixpkgs_core//extensions:repository.bzl",
+          "extensionName": "nix_repo",
+          "usingModule": "<root>",
+          "location": {
+            "file": "@@//:MODULE.bazel",
+            "line": 20,
+            "column": 25
+          },
+          "imports": {
+            "http_nixpkgs": "http_nixpkgs",
+            "nixpkgs": "nixpkgs",
+            "remote_nixpkgs": "remote_nixpkgs"
+          },
+          "devImports": [],
+          "tags": [
+            {
+              "tagName": "default",
+              "attributeValues": {
+                "name": "nixpkgs"
+              },
+              "devDependency": false,
+              "location": {
+                "file": "@@//:MODULE.bazel",
+                "line": 21,
+                "column": 17
+              }
+            },
+            {
+              "tagName": "github",
+              "attributeValues": {
+                "name": "remote_nixpkgs",
+                "sha256": "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01",
+                "tag": "22.05"
+              },
+              "devDependency": false,
+              "location": {
+                "file": "@@//:MODULE.bazel",
+                "line": 24,
+                "column": 16
+              }
+            },
+            {
+              "tagName": "http",
+              "attributeValues": {
+                "name": "http_nixpkgs",
+                "sha256": "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01",
+                "strip_prefix": "nixpkgs-22.05",
+                "url": "https://github.com/NixOS/nixpkgs/archive/refs/tags/22.05.tar.gz"
+              },
+              "devDependency": false,
+              "location": {
+                "file": "@@//:MODULE.bazel",
+                "line": 29,
+                "column": 14
+              }
+            }
+          ],
+          "hasDevUseExtension": false,
+          "hasNonDevUseExtension": true
+        },
+        {
+          "extensionBzlFile": "@rules_nixpkgs_core//extensions:package.bzl",
+          "extensionName": "nix_pkg",
+          "usingModule": "<root>",
+          "location": {
+            "file": "@@//:MODULE.bazel",
+            "line": 44,
+            "column": 24
+          },
+          "imports": {
+            "fish": "fish"
+          },
+          "devImports": [],
+          "tags": [
+            {
+              "tagName": "attr",
+              "attributeValues": {
+                "name": "fish",
+                "attr": "fish",
+                "repo": "@remote_nixpkgs"
+              },
+              "devDependency": false,
+              "location": {
+                "file": "@@//:MODULE.bazel",
+                "line": 47,
+                "column": 13
+              }
+            }
+          ],
+          "hasDevUseExtension": false,
+          "hasNonDevUseExtension": true
+        }
+      ],
       "deps": {
+        "rules_nixpkgs_core": "rules_nixpkgs_core@0.10.0",
         "bazel_tools": "bazel_tools@_",
         "local_config_platform": "local_config_platform@_"
+      }
+    },
+    "rules_nixpkgs_core@0.10.0": {
+      "name": "rules_nixpkgs_core",
+      "version": "0.10.0",
+      "key": "rules_nixpkgs_core@0.10.0",
+      "repoName": "rules_nixpkgs_core",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [
+        {
+          "extensionBzlFile": "@rules_nixpkgs_core//extensions:repository.bzl",
+          "extensionName": "nix_repo",
+          "usingModule": "rules_nixpkgs_core@0.10.0",
+          "location": {
+            "file": "https://bcr.bazel.build/modules/rules_nixpkgs_core/0.10.0/MODULE.bazel",
+            "line": 9,
+            "column": 25
+          },
+          "imports": {
+            "nixpkgs": "nixpkgs"
+          },
+          "devImports": [],
+          "tags": [
+            {
+              "tagName": "github",
+              "attributeValues": {
+                "name": "nixpkgs",
+                "tag": "22.11",
+                "sha256": "ddc3428d9e1a381b7476750ac4dbea7a42885cbbe6e1af44b21d6447c9609a6f"
+              },
+              "devDependency": false,
+              "location": {
+                "file": "https://bcr.bazel.build/modules/rules_nixpkgs_core/0.10.0/MODULE.bazel",
+                "line": 10,
+                "column": 16
+              }
+            }
+          ],
+          "hasDevUseExtension": false,
+          "hasNonDevUseExtension": true
+        }
+      ],
+      "deps": {
+        "platforms": "platforms@0.0.7",
+        "bazel_skylib": "bazel_skylib@1.3.0",
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {
+          "name": "rules_nixpkgs_core~0.10.0",
+          "urls": [
+            "https://github.com/tweag/rules_nixpkgs/releases/download/v0.10.0/rules_nixpkgs-0.10.0.tar.gz"
+          ],
+          "integrity": "sha256-mA7fzu8uWeESLZvmxSQTvCmENfCj1FJTK4pI11Yv/Wc=",
+          "strip_prefix": "rules_nixpkgs-0.10.0/core",
+          "remote_patches": {},
+          "remote_patch_strip": 0
+        }
       }
     },
     "bazel_tools@_": {
@@ -174,6 +331,65 @@
       "deps": {
         "platforms": "platforms@0.0.7",
         "bazel_tools": "bazel_tools@_"
+      }
+    },
+    "platforms@0.0.7": {
+      "name": "platforms",
+      "version": "0.0.7",
+      "key": "platforms@0.0.7",
+      "repoName": "platforms",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "rules_license": "rules_license@0.0.7",
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {
+          "name": "platforms",
+          "urls": [
+            "https://github.com/bazelbuild/platforms/releases/download/0.0.7/platforms-0.0.7.tar.gz"
+          ],
+          "integrity": "sha256-OlYcmee9vpFzqmU/1Xn+hJ8djWc5V4CrR3Cx84FDHVE=",
+          "strip_prefix": "",
+          "remote_patches": {},
+          "remote_patch_strip": 0
+        }
+      }
+    },
+    "bazel_skylib@1.3.0": {
+      "name": "bazel_skylib",
+      "version": "1.3.0",
+      "key": "bazel_skylib@1.3.0",
+      "repoName": "bazel_skylib",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [
+        "//toolchains/unittest:cmd_toolchain",
+        "//toolchains/unittest:bash_toolchain"
+      ],
+      "extensionUsages": [],
+      "deps": {
+        "platforms": "platforms@0.0.7",
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {
+          "name": "bazel_skylib~1.3.0",
+          "urls": [
+            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz"
+          ],
+          "integrity": "sha256-dNVE2W9KW7Yw1GXKi7z+Ix41lOWq5X4e2/F6brPKJQY=",
+          "strip_prefix": "",
+          "remote_patches": {},
+          "remote_patch_strip": 0
+        }
       }
     },
     "rules_cc@0.0.9": {
@@ -440,34 +656,6 @@
         }
       }
     },
-    "platforms@0.0.7": {
-      "name": "platforms",
-      "version": "0.0.7",
-      "key": "platforms@0.0.7",
-      "repoName": "platforms",
-      "executionPlatformsToRegister": [],
-      "toolchainsToRegister": [],
-      "extensionUsages": [],
-      "deps": {
-        "rules_license": "rules_license@0.0.7",
-        "bazel_tools": "bazel_tools@_",
-        "local_config_platform": "local_config_platform@_"
-      },
-      "repoSpec": {
-        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
-        "ruleClassName": "http_archive",
-        "attributes": {
-          "name": "platforms",
-          "urls": [
-            "https://github.com/bazelbuild/platforms/releases/download/0.0.7/platforms-0.0.7.tar.gz"
-          ],
-          "integrity": "sha256-OlYcmee9vpFzqmU/1Xn+hJ8djWc5V4CrR3Cx84FDHVE=",
-          "strip_prefix": "",
-          "remote_patches": {},
-          "remote_patch_strip": 0
-        }
-      }
-    },
     "protobuf@3.19.6": {
       "name": "protobuf",
       "version": "3.19.6",
@@ -582,37 +770,6 @@
             "https://github.com/bazelbuild/apple_support/releases/download/1.5.0/apple_support.1.5.0.tar.gz"
           ],
           "integrity": "sha256-miM41vja0yRPgj8txghKA+TQ+7J8qJLclw5okNW0gYQ=",
-          "strip_prefix": "",
-          "remote_patches": {},
-          "remote_patch_strip": 0
-        }
-      }
-    },
-    "bazel_skylib@1.3.0": {
-      "name": "bazel_skylib",
-      "version": "1.3.0",
-      "key": "bazel_skylib@1.3.0",
-      "repoName": "bazel_skylib",
-      "executionPlatformsToRegister": [],
-      "toolchainsToRegister": [
-        "//toolchains/unittest:cmd_toolchain",
-        "//toolchains/unittest:bash_toolchain"
-      ],
-      "extensionUsages": [],
-      "deps": {
-        "platforms": "platforms@0.0.7",
-        "bazel_tools": "bazel_tools@_",
-        "local_config_platform": "local_config_platform@_"
-      },
-      "repoSpec": {
-        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
-        "ruleClassName": "http_archive",
-        "attributes": {
-          "name": "bazel_skylib~1.3.0",
-          "urls": [
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.3.0/bazel-skylib-1.3.0.tar.gz"
-          ],
-          "integrity": "sha256-dNVE2W9KW7Yw1GXKi7z+Ix41lOWq5X4e2/F6brPKJQY=",
           "strip_prefix": "",
           "remote_patches": {},
           "remote_patch_strip": 0
@@ -1265,6 +1422,117 @@
             "rules_java~7.1.0",
             "remote_java_tools",
             "rules_java~7.1.0~toolchains~remote_java_tools"
+          ]
+        ]
+      }
+    },
+    "@@rules_nixpkgs_core~0.10.0//extensions:package.bzl%nix_pkg": {
+      "general": {
+        "bzlTransitiveDigest": "24moLS83AjcDLeqaT/NeuA0kk6u0sRVbXQ4bCUQrXPg=",
+        "accumulatedFileDigests": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "fish": {
+            "bzlFile": "@@rules_nixpkgs_core~0.10.0//:nixpkgs.bzl",
+            "ruleClassName": "_nixpkgs_package",
+            "attributes": {
+              "name": "rules_nixpkgs_core~0.10.0~nix_pkg~fish",
+              "unmangled_name": "fish",
+              "attribute_path": "fish",
+              "nix_file_deps": {},
+              "nix_file_content": "",
+              "repository": "@@rules_nixpkgs_core~0.10.0~nix_repo~remote_nixpkgs//:remote_nixpkgs",
+              "repositories": {},
+              "build_file_content": "",
+              "nixopts": [],
+              "quiet": false,
+              "fail_not_supported": true
+            }
+          }
+        },
+        "moduleExtensionMetadata": {
+          "explicitRootModuleDirectDeps": [
+            "fish"
+          ],
+          "explicitRootModuleDirectDevDeps": [],
+          "useAllRepos": "NO"
+        },
+        "recordedRepoMappingEntries": [
+          [
+            "rules_nixpkgs_core~0.10.0",
+            "bazel_skylib",
+            "bazel_skylib~1.3.0"
+          ],
+          [
+            "rules_nixpkgs_core~0.10.0",
+            "bazel_tools",
+            "bazel_tools"
+          ]
+        ]
+      }
+    },
+    "@@rules_nixpkgs_core~0.10.0//extensions:repository.bzl%nix_repo": {
+      "general": {
+        "bzlTransitiveDigest": "XhQB299cuReIKaRMnP2K+V7UxHz80jAlQoLmmvGKsOI=",
+        "accumulatedFileDigests": {},
+        "envVariables": {},
+        "generatedRepoSpecs": {
+          "http_nixpkgs": {
+            "bzlFile": "@@rules_nixpkgs_core~0.10.0//:nixpkgs.bzl",
+            "ruleClassName": "_nixpkgs_http_repository",
+            "attributes": {
+              "name": "rules_nixpkgs_core~0.10.0~nix_repo~http_nixpkgs",
+              "unmangled_name": "http_nixpkgs",
+              "url": "https://github.com/NixOS/nixpkgs/archive/refs/tags/22.05.tar.gz",
+              "strip_prefix": "nixpkgs-22.05",
+              "integrity": "",
+              "sha256": "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01"
+            }
+          },
+          "remote_nixpkgs": {
+            "bzlFile": "@@rules_nixpkgs_core~0.10.0//:nixpkgs.bzl",
+            "ruleClassName": "_nixpkgs_http_repository",
+            "attributes": {
+              "name": "rules_nixpkgs_core~0.10.0~nix_repo~remote_nixpkgs",
+              "unmangled_name": "remote_nixpkgs",
+              "url": "https://github.com/NixOS/nixpkgs/archive/refs/tags/22.05.tar.gz",
+              "strip_prefix": "nixpkgs-22.05",
+              "integrity": "",
+              "sha256": "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01"
+            }
+          },
+          "nixpkgs": {
+            "bzlFile": "@@rules_nixpkgs_core~0.10.0//:nixpkgs.bzl",
+            "ruleClassName": "_nixpkgs_http_repository",
+            "attributes": {
+              "name": "rules_nixpkgs_core~0.10.0~nix_repo~nixpkgs",
+              "unmangled_name": "nixpkgs",
+              "url": "https://github.com/NixOS/nixpkgs/archive/refs/tags/22.11.tar.gz",
+              "strip_prefix": "nixpkgs-22.11",
+              "integrity": "",
+              "sha256": "ddc3428d9e1a381b7476750ac4dbea7a42885cbbe6e1af44b21d6447c9609a6f"
+            }
+          }
+        },
+        "moduleExtensionMetadata": {
+          "explicitRootModuleDirectDeps": [
+            "remote_nixpkgs",
+            "http_nixpkgs",
+            "nixpkgs"
+          ],
+          "explicitRootModuleDirectDevDeps": [],
+          "useAllRepos": "NO"
+        },
+        "recordedRepoMappingEntries": [
+          [
+            "rules_nixpkgs_core~0.10.0",
+            "bazel_skylib",
+            "bazel_skylib~1.3.0"
+          ],
+          [
+            "rules_nixpkgs_core~0.10.0",
+            "bazel_tools",
+            "bazel_tools"
           ]
         ]
       }

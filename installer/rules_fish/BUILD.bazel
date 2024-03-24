@@ -1,0 +1,3 @@
+package(default_visibility = ["//visibility:private"])
+
+exports_files(["fish_wrapper.sh", "rlocation.sh", "bazel.fish"])

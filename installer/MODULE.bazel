@@ -1,0 +1,53 @@
+module(name = "installer")
+
+# TODO: today, nix-build must be in path, but there's some will to move this into bazel in the future
+# TODO: create a 0 step with bazelisk for nix-build.
+# TODO: doc manually installing just nix-build: https://releases.nixos.org/nix/nix-2.20.1/nix-2.20.1-$system.tar.xz
+# TODO: need to download and explore the tar:
+# https://releases.nixos.org/nix/nix-2.20.1/nix-2.20.1-x86_64-linux.tar.xz
+# exploring,I see nix-2.20.1-x86_64-linux/store/iwgkck1d64s5f26ngln540hpf06g28py-nix-2.20.1/bin/nix-build
+# in the tar ball.
+# tar -xf nix-2.20.1-x86_64-linux.tar.xz -C nix
+# cd nix
+# mv nix-2.20.1-x86_64-linux/store/iwgkck1d64s5f26ngln540hpf06g28py-nix-2.20.1/bin/nix-build ~/.local/bin/
+# mv nix-2.20.1-x86_64-linux/store/iwgkck1d64s5f26ngln540hpf06g28py-nix-2.20.1/bin/nix ~/.local/bin/
+# hmm yeah that seems to give you something broken... many commands end in "no such file or directory"
+# We could proceed with single user install: sh <(curl -L https://nixos.org/nix/install) --no-daemon
+# which can be undone with $ rm -rf /nix
+# TODO: add ~/.config/fish/conf.d/nix-env.fish to chezmoi? Add bash/zsh sources?
+bazel_dep(name = "rules_nixpkgs_core", version = "0.10.0")
+
+nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
+nix_repo.default(name = "nixpkgs")
+
+# register nixpkg sources
+nix_repo.github(
+    name = "remote_nixpkgs",
+    sha256 = "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01",
+    tag = "22.05",
+)
+nix_repo.http(
+    name = "http_nixpkgs",
+    sha256 = "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01",
+    strip_prefix = "nixpkgs-22.05",
+    url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/22.05.tar.gz",
+)
+
+use_repo(
+    nix_repo,
+    "http_nixpkgs",
+    "nixpkgs",
+    "remote_nixpkgs",
+)
+
+# register packages
+nix_pkg = use_extension("@rules_nixpkgs_core//extensions:package.bzl", "nix_pkg")
+
+# TODO: wow fish from nixpkgs is 3.4.1 which is pretty old! Would prefer to write our own toolchain for it.
+nix_pkg.attr(
+    name = "fish",
+    attr = "fish",
+    repo = "@remote_nixpkgs",
+)
+
+use_repo(nix_pkg, "fish")
