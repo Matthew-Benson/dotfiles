@@ -22,6 +22,5 @@ FISH="$(rlocation $FISH_RLOCATION_PATH)"
 # well, how does sh_binary deal with deps? They have to be library targets but I don't remember how to use them. Oh deps
 # go to runfiles too.
 
-# TODO: SRCS file not found - we need to template relative path ..? But what is it?
 # TODO: in scripts, source bazel.fish? It will hold these helpers and be put in path here?
 "$FISH" --no-config --private "{SRCS}" $@

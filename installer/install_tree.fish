@@ -1,6 +1,7 @@
 #!/usr/bin/env fish
 
-source
+# TODO: HERE: how to source bazel.fish for helpers?
+# source
 
 # TODO: how to install for MacOS? There's a brew package but it's using a different implementation.
 # Depends: libc6 (>= 2.34)
@@ -40,7 +41,7 @@ end
 # TODO: should be optional? Maybe a doc on how to do tracing and how to debug?
 # set -x fish_trace true
 
-env | sort
+# env | sort
 
 # TODO: wrap main function for better debugging - i.e. source/breakpoint?
 # TODO: add to doc - sh_binary respects shebangs, but we can't append PATH
@@ -49,6 +50,9 @@ env | sort
 # we will use nix to provide access to a wide range of dependable, pre-build
 # system tools and programs. Would be better to compile them all ourselves
 # with bazel but that's a complicated large effort.
+
+echo "we made it!"
+exit 0
 
 set -l options h/help 'v/version='
 argparse -n install_tree $options -- $argv
