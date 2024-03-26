@@ -1,32 +1,32 @@
 load("//rules_fish:fish.bzl", "fish_binary")
 
 # TODO: doc execpath is the thing for executing tools - will be relative path from PWD - https://bazel.build/reference/be/make-variables
-sh_binary(
-    name = "install_tree",
-    srcs = ["install_tree.fish"],
-    data = ["@fish//:bin/fish"],
-    # env = {"PATH": "$(locations @fish//:bin/fish)"},
-    env = {
-        "execpath": "$(execpath @fish//:bin/fish)",
-        "rootpath": "$(rootpath @fish//:bin/fish)",
-        "rlocationpath": "$(rlocationpath @fish//:bin/fish)",
-        "location": "$(location @fish//:bin/fish)",
-        "BINDIR": "$(BINDIR)",
-        "FOO": "/home/mbenson/.local/share/chezmoi/installer/bazel-out/k8-fastbuild/bin/install_tree.runfiles/_main/$(execpath @fish//:bin/fish)".removesuffix("/fish"),
-        "BAR": "foo/fish".removesuffix("/fish"),
-    },
-    # TODO: once again, even though sh_binary respects shebang it's very hard to get the absolute path of a dependency this way.
-    # we could use a wrapper script that runs fish using rlocation lib or we could use a genrule?
-)
+# sh_binary(
+#     name = "install_tree",
+#     srcs = ["install_tree.fish"],
+#     data = ["@fish//:bin/fish"],
+#     # env = {"PATH": "$(locations @fish//:bin/fish)"},
+#     env = {
+#         "execpath": "$(execpath @fish//:bin/fish)",
+#         "rootpath": "$(rootpath @fish//:bin/fish)",
+#         "rlocationpath": "$(rlocationpath @fish//:bin/fish)",
+#         "location": "$(location @fish//:bin/fish)",
+#         "BINDIR": "$(BINDIR)",
+#         "FOO": "/home/mbenson/.local/share/chezmoi/installer/bazel-out/k8-fastbuild/bin/install_tree.runfiles/_main/$(execpath @fish//:bin/fish)".removesuffix("/fish"),
+#         "BAR": "foo/fish".removesuffix("/fish"),
+#     },
+#     # TODO: once again, even though sh_binary respects shebang it's very hard to get the absolute path of a dependency this way.
+#     # we could use a wrapper script that runs fish using rlocation lib or we could use a genrule?
+# )
 
-# TODO: need something in .bzl rule that wraps like this - executables must output a single executable file!
-sh_binary(
-    name = "foo",
-    srcs = ["fish_wrapper.sh"],
-    data = ["@fish//:bin/fish", "install_tree.fish"],
-    deps = ["@bazel_tools//tools/bash/runfiles"],
-    env = {"FISH_RLOCATION_PATH": "$(rlocationpath @fish//:bin/fish)"},
-)
+# # TODO: need something in .bzl rule that wraps like this - executables must output a single executable file!
+# sh_binary(
+#     name = "foo",
+#     srcs = ["fish_wrapper.sh"],
+#     data = ["@fish//:bin/fish", "install_tree.fish"],
+#     deps = ["@bazel_tools//tools/bash/runfiles"],
+#     env = {"FISH_RLOCATION_PATH": "$(rlocationpath @fish//:bin/fish)"},
+# )
 
 # TODO: how to write genrule fish wrapper that writes an executable script with some $(location fish) $@?
 # genrule(
@@ -39,6 +39,6 @@ sh_binary(
 # )
 
 fish_binary(
-    name = "bar",
+    name = "install_tree",
     srcs = ["install_tree.fish"],
 )

@@ -51,7 +51,13 @@ end
 # system tools and programs. Would be better to compile them all ourselves
 # with bazel but that's a complicated large effort.
 
-echo "we made it!"
+# echo "we made it!"
+# echo "$BAZEL_FISH"
+# tree
+# source rules_fish/bazel.fish
+source $BAZEL_FISH
+set -l FOO $(rlocation "rules_nixpkgs_core~0.10.0~nix_pkg~fish/bin/fish")
+echo $FOO
 exit 0
 
 set -l options h/help 'v/version='

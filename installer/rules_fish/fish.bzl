@@ -1,23 +1,25 @@
 def _fish_binary_impl(ctx):
-    # TODO: ctx.expand_location() could be used instead of runfiles ?
+    # TODO: clean up this function - provide doc comments?
     # TODO: when moving to a full-on toolchain, this template should be os-dependant? i.e. Windows = ps1 and everyone else = sh?
-    # print(ctx.attr.srcs)
+    src = ctx.attr.srcs[0].files.to_list()[0]
+    output_file = ctx.actions.declare_file(ctx.label.name)
 
     ctx.actions.expand_template(
         template = ctx.file._template,
-        output = ctx.outputs.output,
+        output = output_file,
         substitutions = {
             # TODO: this works, but don't understand the _main repo mapping ...? Where does this come from? Also what is the best path separator?
+            # I mean, I understand this is the _main/ as part of bzlmod repo, BUT other runfiles libs don't need this - is bash runfiles lookup
+            # just in need of an update? I can't find any issues tracking this.
             # TODO: and should srcs be handled with rlocation or is this going to work well?
-            "{SRCS}": ctx.attr.srcs[0].files.to_list()[0].path,
+            "{SRCS}": src.path,
             "{FISH}": "_main/" + ctx.file._fish.path,
         },
     )
 
-    executable = ctx.outputs.output
+    # TODO: this completely redundant?
+    executable = output_file
     deps = [executable]
-
-    # print("deps", deps)
 
     # TODO: is this the right place for srcs? It works, but semantically best?
     fish_dependencies = [
@@ -25,10 +27,11 @@ def _fish_binary_impl(ctx):
         ctx.file._runfiles_bash,
         ctx.file._rlocation_bash,
         ctx.file._bazel_fish,
-    ] + ctx.attr.srcs[0].files.to_list()
+    ]
 
     # print("fish_dependencies", fish_dependencies)
-    runfiles = ctx.runfiles(files = ctx.files.data + ctx.files.deps + fish_dependencies)
+    runfiles_list = ctx.files.data + ctx.files.deps + [src] + fish_dependencies
+    runfiles = ctx.runfiles(files = runfiles_list)
 
     transitive_runfiles = []
     for runfiles_attr in (
@@ -40,8 +43,6 @@ def _fish_binary_impl(ctx):
             transitive_runfiles.append(target[DefaultInfo].default_runfiles)
     runfiles = runfiles.merge_all(transitive_runfiles)
 
-    # print("runfiles", runfiles.files)
-
     return [DefaultInfo(
         files = depset(deps),
         runfiles = runfiles,
@@ -51,10 +52,6 @@ def _fish_binary_impl(ctx):
 fish_binary = rule(
     implementation = _fish_binary_impl,
     executable = True,
-    outputs = {
-        # TODO: how to format this name? don't use .sh either?
-        "output": "fish.sh",
-    },
     attrs = {
         # TODO: exactly one file - sh_binary calls this a singleton list.
         "srcs": attr.label_list(allow_files = True, mandatory = True),
