@@ -57,6 +57,12 @@ fish_binary = rule(
         "srcs": attr.label_list(allow_files = True, mandatory = True),
         "data": attr.label_list(allow_files = True),
         "deps": attr.label_list(allow_files = True),  # TODO: enforce fish files and link these?
+        # "_fish": attr.label(
+        #     default = Label("@fish//:bin/fish"),
+        #     allow_single_file = True,
+        #     executable = True,
+        #     cfg = "exec",
+        # ),
         "_fish": attr.label(
             default = Label("@fish//:bin/fish"),
             allow_single_file = True,
@@ -80,4 +86,8 @@ fish_binary = rule(
             allow_single_file = True,
         ),
     },
+    # toolchains = ["//rules_fish:toolchain_type"],
+    # TODO: HERE: replace _fish in impl with info = ctx.toolchains["@fish_toolchains//:toolchain_type"].fishinfo
+    # Will also have to implement Build with foreign_cc rules?
+    toolchains = ["@fish_toolchains//:toolchain_type"],
 )

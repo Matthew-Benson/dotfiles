@@ -16,6 +16,7 @@ module(name = "installer")
 # which can be undone with $ rm -rf /nix
 # TODO: add ~/.config/fish/conf.d/nix-env.fish to chezmoi? Add bash/zsh sources?
 bazel_dep(name = "rules_nixpkgs_core", version = "0.10.0")
+bazel_dep(name = "platforms", version = "0.0.9")
 
 nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
 nix_repo.default(name = "nixpkgs")
@@ -51,3 +52,33 @@ nix_pkg.attr(
 )
 
 use_repo(nix_pkg, "fish")
+
+# TODO: https://sourcegraph.com/search?q=context:global+native.register_toolchains+lang:starlark&patternType=keyword&sm=0
+fish = use_extension("//rules_fish:extension.bzl", "download_fish")
+fish.toolchain(version = "3.7.1")
+use_repo(fish, "fish_toolchains")
+register_toolchains("@fish_toolchains//:all")
+
+# register_toolchains(
+#     "//rules_fish:fish_linux_toolchain",
+# )
+
+# we could instead do
+# https://github.com/cameron-martin/bazel-lsp/blob/master/MODULE.bazel
+# rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
+# rust.toolchain(
+#     edition = "2021",
+#     versions = ["1.75.0"],
+# )
+# use_repo(rust, "rust_toolchains")
+# register_toolchains("@rust_toolchains//:all")
+# so what's up with this? Am I required to do another register_toolchains()?
+# Ah, the go example is so complicated because they have to support a million
+# use-cases that will never and cannot matter for us. They also support WORKSPACE
+# and it'll never matter for me, so I'm not supporting it.
+# oh the rust bzlmod ext has similar logic, just register_toolchains = False
+# and you have to explicitly register. I think that's more clear.
+# https://www.jayconrod.com/posts/111/writing-bazel-rules--platforms-and-toolchains
+# bazel query --output=build @fish_toolchains//:all
+# bazel build '//:install_tree' --toolchain_resolution_debug='//rules_fish:toolchain_type'
+# bazel query "@fish_toolchains//:all"

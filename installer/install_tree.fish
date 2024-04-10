@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-# TODO: HERE: how to source bazel.fish for helpers?
+# TODO: how to source bazel.fish for helpers?
 # source
 
 # TODO: how to install for MacOS? There's a brew package but it's using a different implementation.
