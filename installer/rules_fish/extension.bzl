@@ -1,6 +1,7 @@
 load(":download.bzl", "fish_register_toolchains")
 
 def _download_fish_impl(module_ctx):
+    print("_download_fish_impl")
     for mod in module_ctx.modules:
         for toolchain in mod.tags.toolchain:
             fish_register_toolchains(toolchain.version)

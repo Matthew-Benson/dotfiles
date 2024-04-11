@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 3,
-  "moduleFileHash": "de2c01504f118a112ebfd1344f4152b76d08a07e291c00ddaca0592dbfed9217",
+  "moduleFileHash": "2608fcc26efca30edcd2a7b2f142d7aec928fde0499cb174ad5c67573879048d",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -125,7 +125,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 59,
+            "line": 57,
             "column": 21
           },
           "imports": {
@@ -141,7 +141,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 60,
+                "line": 58,
                 "column": 15
               }
             }
@@ -831,7 +831,7 @@
   "moduleExtensions": {
     "//rules_fish:extension.bzl%download_fish": {
       "general": {
-        "bzlTransitiveDigest": "MPhALhY97F3GHLOxoj6NdkPtVUdV5DET+zQv8hTDBfI=",
+        "bzlTransitiveDigest": "HZirXvvMy8ruCSwbVyiS1x/g6nZ9gDOXQAYdSChYavI=",
         "accumulatedFileDigests": {},
         "envVariables": {},
         "generatedRepoSpecs": {
@@ -843,14 +843,6 @@
               "versions": [
                 "3.7.1"
               ]
-            }
-          },
-          "fish": {
-            "bzlFile": "@@//rules_fish:download.bzl",
-            "ruleClassName": "fish_download_release_rule",
-            "attributes": {
-              "name": "_main~download_fish~fish",
-              "version": "3.7.1"
             }
           }
         },

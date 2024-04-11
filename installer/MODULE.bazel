@@ -82,3 +82,22 @@ register_toolchains("@fish_toolchains//:all")
 # bazel query --output=build @fish_toolchains//:all
 # bazel build '//:install_tree' --toolchain_resolution_debug='//rules_fish:toolchain_type'
 # bazel query "@fish_toolchains//:all"
+#
+# Did bazel build --sandbox_debug @fish_toolchains//:all
+# and inspected the sandbox output to see if that helps us understand
+# ll ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/external/_main\~download_fish\~fish_toolchains/
+# cat ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/external/_main\~download_fish\~fish_toolchains/WORKSPACE
+# # DO NOT EDIT: automatically generated WORKSPACE file for fish_multiple_toolchains rule
+# workspace(name = "_main~download_fish~fish_toolchains")
+# there is a generated workspace for fish_multiple_toolchains - can we only have 1 repo_rule implementation in the call stack
+# of use_repo I wonder? Does this explain why moving functions around changed everything?
+# TODO: add a CONTRIBUTING with debugging tips and commands - see bottll //experimental/users/mbenson/bazel_vitest_error_demo/README.md
+# and https://bazel.build/remote/output-directories
+# set HASH "(echo -n $PWD | md5sum | awk '{ print $1 }')"
+# ll $HOME/.cache/bazel/_bazel_root/$HASH/external/_main\~download_fish\~fish_toolchains/
+# TODO: needs changed when we rename these rules, but is there an automated way to get this? I think YES
+# but involves some bazel query?
+# TODO: HERE: now we need to actually build fish i.e. the binary and make it at least "work-ish" from that non-standard install path.
+# we will need c++ 11 compiler (g++ 4.8+ or clang 3.3+ (how do we decide?)), CMake (pretty sure we get this in foreign_cc) and
+# we need to deal with PCRE2 dependency for c++ builds for now - their makefile should get it, but we can do better with bazel.
+# This could be leaky for hermitacity?
