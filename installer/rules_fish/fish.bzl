@@ -4,6 +4,10 @@ def _fish_binary_impl(ctx):
     src = ctx.attr.srcs[0].files.to_list()[0]
     output_file = ctx.actions.declare_file(ctx.label.name)
 
+    print("want:", "_main/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/fish")
+    print("got :", "_main/" + ctx.file._fish.path)
+    print("forcing fish path")
+
     ctx.actions.expand_template(
         template = ctx.file._template,
         output = output_file,
@@ -13,7 +17,8 @@ def _fish_binary_impl(ctx):
             # just in need of an update? I can't find any issues tracking this.
             # TODO: and should srcs be handled with rlocation or is this going to work well?
             "{SRCS}": src.path,
-            "{FISH}": "_main/" + ctx.file._fish.path,
+            # "{FISH}": "_main/" + ctx.file._fish.path,
+            "{FISH}": "_main/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/fish",
         },
     )
 
@@ -64,7 +69,8 @@ fish_binary = rule(
         #     cfg = "exec",
         # ),
         "_fish": attr.label(
-            default = Label("@fish//:bin/fish"),
+            # default = Label("@fish//:bin/fish"),
+            default = Label("@fish_toolchains//fish:fish_bin"),
             allow_single_file = True,
             executable = True,
             cfg = "exec",

@@ -1,4 +1,98 @@
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
+
+package(default_visibility = ["//visibility:public"])
+
+# TODO(mbenson): pair down deps to source code - would be best to automate
 filegroup(
-    name = "files",
+    name = "srcs",
     srcs = glob(["**"]),
+)
+
+# find all targets that depend on a target:
+# bazel query --universe_scope=//... 'allrdeps(//:mylib)'
+# bazel query --universe_scope=//experimental/storage/... 'allrdeps(//third_party/postgres/servers/postgres15:postgres)'
+
+# TODO: wrap this whole target in a cc_binary - https://docs.bazel.build/versions/master/be/c-cpp.html#cc_binary for it to be runnable?
+
+# https://github.com/fish-shell/fish-shell/tree/3.7.1?tab=readme-ov-file#dependencies-1
+cmake(
+    name = "fish",
+    lib_source = ":srcs",
+    # build_args = ["-DFISH_USE_SYSTEM_PCRE2=OFF"],
+    generate_args = [
+        # "-DFISH_USE_SYSTEM_PCRE2=OFF",  # NOTE: can toggle this to make it break so we can see cmake output
+        "-DMAC_CODESIGN_ID=OFF",
+        "-DWITH_GETTEXT=OFF",
+        # "-DCMAKE_INSTALL_PREFIX=.",
+    ],
+    install = False,
+    # install = True,
+    # out_bin_dir = ".",
+    # out_bin_dir = "./",
+    # out_bin_dir = "../",
+    # AHA! Needed this path which we would never have found without fixing paths for sandbox. Would prefer to just have make output a better dir.
+    # TODO: can we set default args for fish at build time? It will try to pull user config from HOME and unexpected things will happen.
+    out_bin_dir = "../fish.build_tmpdir/",
+    # out_bin_dir = "fish/",
+    # out_bin_dir = "fish/fish/",
+    # out_include_dir = "../",
+    # out_include_dir = "",
+    # out_lib_dir = "../",
+    out_lib_dir = "../fish.build_tmpdir/",
+    out_binaries = [
+        "fish",
+        "fish_indent",
+        "fish_key_reader",
+        "fish_test_helper",
+    ],
+    # out_binaries = ["fish"],
+    # out_binaries = [],
+    out_shared_libs = [],
+    out_static_libs = ["libfishlib.a"],
+    # out_headers_only = True,  # NOTE: setting this will make the build succeed but output nothing which could be helpful
+    # out_binaries = ["fish", "fish_indent", "fish_key_reader"],
+    # build_data = [], # TODO: use toolchain PCRE2 target here? AH I need ncurses too.
+    # https://invisible-island.net/archives/ncurses/
+    # NOTE: I am skipping over ncurses for now with `sudo apt install libncurses-dev` on debian.
+    # HA we will have to include PCRE2, the resolver in cmake doesn't seem to work in this context.
+    # Again, working around for now: `sudo apt install libpcre2-dev`
+    # WOW this build is tremendously slow - ran 118s on desktop.
+    # Got error that outputs from cmake aren't as expected. There are extra steps and directories
+    # in Fish's build instructions that are hard to recreate here, so installing cmake and debugging
+    # in another directory for manual build. `sudo apt install cmake`
+    # The manual cmake tool less than a second, so not sure where the time is going.
+    # We don't need the `mkdir build; cd build; cmake ..`, just running `cmake .; make` produces
+    # a working binary `fish`.
+    # OH I can just read output from cmake here: bazel-bin/external/_main\~download_fish\~fish_toolchains/fish/fish_foreign_cc/CMake.log
+    # Hmm seems like it JUST WORKED and I've miss-mapped outputs or something?
+    # cd /home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/7/execroot/_main/external/_main\~download_fish\~fish_toolchains/fish/
+    # cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/7/execroot/_main/external/_main~download_fish~fish_toolchains/fish/fish -DCMAKE_RANLIB= -DMAC_CODESIGN_ID=OFF -DWITH_GETTEXT=OFF -G 'Unix Makefiles' (pwd)
+    # pfft the sandbox symlinks to files that have been cleaned up - this is worthless.
+    # In the manual fish dir:
+    # mkdir build; cd build
+    # cmake ..
+    # cmake --build . --config Release
+    # DEBUG
+    # bazel build --sandbox_debug @fish_toolchains//fish:fish
+    # in another tab
+    # watch "ls -l ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/1/execroot/_main/external/_main\~download_fish\~fish_toolchains/fish/"
+    # where the sandbox number is assumed and can be verified when build fails
+    # OMG I've been looking in the wrong sandbox cache, should be like this:
+    # ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/5/execroot/_main/bazel-out/k8-fastbuild/bin/external/_main\~download_fish\~fish_toolchains/fish/
+    # i.e. 1/execroot/_main/bazel-out/... instead of 1/execroot/_main/external/...
+)
+
+# from example:
+# https://github.com/bazelbuild/rules_foreign_cc/blob/b136e6c52da63da300b0f588c8a214d97b0d15cd/examples/third_party/gn/BUILD.gn.bazel#L45
+config_setting(
+    name = "windows",
+    constraint_values = ["@platforms//os:windows"],
+)
+filegroup(
+    name = "fish_bin",
+    srcs = [":fish"],
+    output_group = select({
+        ":windows": "fish.exe",
+        "//conditions:default": "fish",
+    }),
 )

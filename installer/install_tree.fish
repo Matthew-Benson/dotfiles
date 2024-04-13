@@ -55,7 +55,12 @@ end
 # echo "$BAZEL_FISH"
 # tree
 # source rules_fish/bazel.fish
-source $BAZEL_FISH
+echo "hello fish, from"
+status current-command
+status fish-path
+status current-commandline
+source $BAZEL_FISH or echo "failed to source $BAZEL_FISH" and return 1
+# TODO: how to "or" error check the rlocation when it happens in a subshell? it fails now, probably because we nuked this dep.
 set -l FOO $(rlocation "rules_nixpkgs_core~0.10.0~nix_pkg~fish/bin/fish")
 echo $FOO
 exit 0

@@ -16,6 +16,7 @@ module(name = "installer")
 # which can be undone with $ rm -rf /nix
 # TODO: add ~/.config/fish/conf.d/nix-env.fish to chezmoi? Add bash/zsh sources?
 bazel_dep(name = "rules_nixpkgs_core", version = "0.10.0")
+bazel_dep(name = "rules_foreign_cc", version = "0.10.1")
 bazel_dep(name = "platforms", version = "0.0.9")
 
 nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
@@ -101,3 +102,11 @@ register_toolchains("@fish_toolchains//:all")
 # we will need c++ 11 compiler (g++ 4.8+ or clang 3.3+ (how do we decide?)), CMake (pretty sure we get this in foreign_cc) and
 # we need to deal with PCRE2 dependency for c++ builds for now - their makefile should get it, but we can do better with bazel.
 # This could be leaky for hermitacity?
+# There's a PCRE example in https://bazelbuild.github.io/rules_foreign_cc/main/cmake.html and there's a mirror at
+# "https://mirror.bazel.build/ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz"
+# It is also a cmake project.
+# https://github.com/bazelbuild/rules_foreign_cc/blob/5c34b7136f0dec5d8abf2b840796ec8aef56a7c1/examples/MODULE.bazel#L8
+# TODO: sandbox debug and inspect what comes out from cmake?
+# TODO: inspect brew and nix builds to see what they do
+# TODO: try making cmake() explicitly output the contents of manually running cmake from build dir like regular instructions?
+# TODO: verbose_failures?
