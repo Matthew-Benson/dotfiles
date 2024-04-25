@@ -1,0 +1,21 @@
+load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
+
+# TODO: rename functions to pcre2?
+# TODO: this repo has a root BUILD.bazel already?
+# https://github.com/PCRE2Project/pcre2/blob/master/BUILD.bazel
+filegroup(
+    name = "srcs",
+    srcs = glob(["**"]),
+    visibility = ["//visibility:public"],
+)
+
+cmake(
+    name = "pcre2",
+    cache_entries = {
+        "CMAKE_C_FLAGS": "-fPIC",
+    },
+    lib_source = ":srcs",
+    out_shared_libs = [],
+    # out_static_libs = ["libpcrecpp.a"],
+    out_static_libs = ["libpcre.a"],
+)

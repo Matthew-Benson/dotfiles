@@ -1,6 +1,6 @@
 {
   "lockFileVersion": 3,
-  "moduleFileHash": "0a7c32b8dae7f699d8286505991ab847f649675338f8eccf7ddb76c283ea63c8",
+  "moduleFileHash": "9bede98014ec2e07c1b44e7da189e1b0b5d71d6f72c4520849109a70c5c21915",
   "flags": {
     "cmdRegistries": [
       "https://bcr.bazel.build/"
@@ -32,7 +32,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 22,
+            "line": 23,
             "column": 25
           },
           "imports": {
@@ -50,7 +50,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 23,
+                "line": 24,
                 "column": 17
               }
             },
@@ -64,7 +64,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 26,
+                "line": 27,
                 "column": 16
               }
             },
@@ -79,7 +79,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 31,
+                "line": 32,
                 "column": 14
               }
             }
@@ -93,7 +93,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 46,
+            "line": 47,
             "column": 24
           },
           "imports": {
@@ -111,7 +111,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 49,
+                "line": 50,
                 "column": 13
               }
             }
@@ -125,7 +125,7 @@
           "usingModule": "<root>",
           "location": {
             "file": "@@//:MODULE.bazel",
-            "line": 58,
+            "line": 59,
             "column": 21
           },
           "imports": {
@@ -141,7 +141,7 @@
               "devDependency": false,
               "location": {
                 "file": "@@//:MODULE.bazel",
-                "line": 59,
+                "line": 60,
                 "column": 15
               }
             }
@@ -154,6 +154,7 @@
         "rules_nixpkgs_core": "rules_nixpkgs_core@0.10.0",
         "rules_foreign_cc": "rules_foreign_cc@0.10.1",
         "platforms": "platforms@0.0.9",
+        "pcre2": "pcre2@10.43",
         "bazel_tools": "bazel_tools@_",
         "local_config_platform": "local_config_platform@_"
       }
@@ -330,6 +331,37 @@
           "integrity": "sha256-XtpTnIQSZQMcL4LYrno6ZJC9YhduDAOPxGnqv5H2FJs=",
           "strip_prefix": "",
           "remote_patches": {},
+          "remote_patch_strip": 0
+        }
+      }
+    },
+    "pcre2@10.43": {
+      "name": "pcre2",
+      "version": "10.43",
+      "key": "pcre2@10.43",
+      "repoName": "pcre2",
+      "executionPlatformsToRegister": [],
+      "toolchainsToRegister": [],
+      "extensionUsages": [],
+      "deps": {
+        "rules_cc": "rules_cc@0.0.9",
+        "bazel_skylib": "bazel_skylib@1.3.0",
+        "bazel_tools": "bazel_tools@_",
+        "local_config_platform": "local_config_platform@_"
+      },
+      "repoSpec": {
+        "bzlFile": "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "ruleClassName": "http_archive",
+        "attributes": {
+          "name": "pcre2~10.43",
+          "urls": [
+            "https://github.com/PCRE2Project/pcre2/archive/refs/tags/pcre2-10.43.tar.gz"
+          ],
+          "integrity": "sha256-8ASOJrAr369DuM7HUDCpwv4oVSv1yqaT08y/TYhvqTA=",
+          "strip_prefix": "pcre2-pcre2-10.43",
+          "remote_patches": {
+            "https://bcr.bazel.build/modules/pcre2/10.43/patches/module_dot_bazel.patch": "sha256-eIU+Xcq2AbAlSCJB0cgKjGxCXUuypRwgJDIXmYrRlvM="
+          },
           "remote_patch_strip": 0
         }
       }
@@ -1226,7 +1258,7 @@
   "moduleExtensions": {
     "//rules_fish:extension.bzl%download_fish": {
       "general": {
-        "bzlTransitiveDigest": "CXLkNpc9LNr99gb9dCuBMQOIsA4NMgySEdnzkNXW/qw=",
+        "bzlTransitiveDigest": "7RxKHVhJotSHStWe19k+8aTpsl8LnVPQSL1iTPtHdXw=",
         "accumulatedFileDigests": {},
         "envVariables": {},
         "generatedRepoSpecs": {

@@ -21,10 +21,40 @@ cmake(
     # build_args = ["-DFISH_USE_SYSTEM_PCRE2=OFF"],
     generate_args = [
         # "-DFISH_USE_SYSTEM_PCRE2=OFF",  # NOTE: can toggle this to make it break so we can see cmake output
+        "-DFISH_USE_SYSTEM_PCRE2=ON",
         "-DMAC_CODESIGN_ID=OFF",
         "-DWITH_GETTEXT=OFF",
         # "-DCMAKE_INSTALL_PREFIX=.",
+        # TODO: HERE: build failing - something about undefined _32 variables and functions in pcre2?
+        # TODO: any way to use the env where we have make variable substitution and use that value in args here?
+        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib",
+        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/include",
+        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps",
+        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib/libpcre2.a",
+        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib/libpcre2.so",
+        # "-DSYS_PCRE2_INCLUDE_DIR=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/include",
+        # A "normal" sys dependency of SYS_PCRE2_LIB would be SYS_PCRE2_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libpcre2-32.so
+        # the cmake build depends on a file named like this, but the pcre2 from bazel outputs nothing like this? see cmake file:
+        # https://github.com/fish-shell/fish-shell/blob/80394ea4e38138e0ce0bf23b016dc931e22ff788/cmake/PCRE2.cmake#L12
+        # so do we have anything like this that we can patch in with some symlink bazel nonsense? I hate needing a file
+        # by that name, but what can you do... And how do we know we have something like this? How does one read an .so file?
+        # we can comepare that file to bazel-out/k8-fastbuild/bin/external/pcre2\~10.43/libpcre2.so with
+        # nm -gD myfile
+        # and see that they are actually completely different - the libpcre from bazel is built with width 8 instead of 32.
+        # So we need to tell fish cmake that too. do we set WCHAR_T_BITS or PCRE2_WIDTH? Not clear that it will even work like this.
+        # "-DWCHAR_T_BITS=8",
+        "-DPCRE2_CODE_UNIT_WIDTH=8",
+        # "-DSYS_PCRE2_LIB=/usr/lib/x86_64-linux-gnu/libpcre2-32.so",
     ],
+    # build_args = [
+    #     "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib",
+    # ],
+    # /home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/34/execroot/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/CMakeCache.txt:SYS_PCRE2_LIB:FILEPATH=SYS_PCRE2_LIB-NOTFOUND
+    # /home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/34/execroot/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/CMakeCache.txt:fishlib_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libcurses.so;general;/usr/lib/x86_64-linux-gnu/libtinfo.so;general;dl;general;SYS_PCRE2_LIB-NOTFOUND;
+    # TODO need to set an env SYS_PCRE2_LIB to /tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib?
+    # that feels unreliable? OH you can use make substitution for paths... how does that help us with lib though?
+    # env = {"SYS_PCRE2_LIB": "$(execpaths @pcre2//:pcre2)"},
+    deps = ["@pcre2//:pcre2"],
     install = False,
     # install = True,
     # out_bin_dir = ".",

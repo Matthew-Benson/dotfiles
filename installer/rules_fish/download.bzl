@@ -8,6 +8,17 @@ https://github.com/bazel-contrib/toolchains_llvm/blob/96b5eee584450963408be7c33b
 
 def _fish_multiple_toolchains_impl(repository_ctx):
     print("_fish_multiple_toolchains_impl")
+
+    # _pcre2_download(
+    #     repository_ctx,
+    #     [
+    #         "https://mirror.bazel.build/github.com/PCRE2Project/pcre2/releases/download/pcre2-10.43/pcre2-10.43.tar.gz",
+    #         "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.43/pcre2-10.43.tar.gz",
+    #     ],
+    #     "889d16be5abb8d05400b33c25e151638b8d4bac0e2d9c76e9d6923118ae8a34e",
+    #     "10.43",
+    # )
+
     _fish_download_impl(repository_ctx)
     repository_ctx.file(
         "BUILD.bazel",
@@ -31,6 +42,28 @@ fish_multiple_toolchains = repository_rule(
     },
 )
 
+# TODO: AGH JUST USE THE RELEASE FROM BAZEL CENTRAL REPO: bazel_dep(name = "pcre2", version = "10.43")
+# def _pcre_repository_impl(repository_ctx):
+# def _pcre2_download(repository_ctx, urls, sha256, version):
+#     print("_pcre2_download")
+#     repository_ctx.report_progress("Downloading and extracting pcre2")
+
+#     repository_ctx.download_and_extract(
+#         url = urls,
+#         sha256 = sha256,
+#         output = "pcre2",
+#         stripPrefix = "pcre2-{}".format(version),
+#     )
+
+#     # repository_ctx.template(
+#     #     "pcre2/BUILD.bazel",
+#     #     repository_ctx.path(Label("//rules_fish:BUILD.pcre2.bazel")),
+#     #     executable = False,
+#     #     substitutions = {
+#     #         "{version}": version,
+#     #     },
+#     # )
+
 def _fish_download_impl(repository_ctx):
     print("_fish_download_impl")
     version = repository_ctx.attr.versions[0]
@@ -39,6 +72,7 @@ def _fish_download_impl(repository_ctx):
     # TODO: we could do better with string formatting here ...
     _remote_fish(repository_ctx, [url.format(version = version) for url in repository_ctx.attr.urls], repository_ctx.attr.sha256)
 
+    # TODO: remove .format()?
     repository_ctx.template(
         "fish/BUILD.bazel".format(version = version),
         repository_ctx.path(repository_ctx.attr._fish_build_file),
@@ -81,6 +115,8 @@ def fish_download_release(name, register_toolchains = True, **kwargs):
 # TODO: re-sort this madness in the end
 def _fish_toolchains(name, version):
     print("_fish_toolchains")
+
+    print("call repository_rule 'fish_multiple_toolchains' with name = {}, versions = [{}]".format(name, version))
     fish_multiple_toolchains(name = name, versions = [version])
 
 def fish_toolchains_single_definition(repository_ctx, version):
