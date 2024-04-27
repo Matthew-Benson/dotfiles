@@ -68,6 +68,7 @@ cc_library(
     includes = ["src"],
     strip_include_prefix = "src",
     visibility = ["//visibility:public"],
+    linkstatic = True,  # TODO: how to disable .pic.a file output?
 )
 
 cc_binary(
@@ -77,6 +78,18 @@ cc_binary(
     deps = [":pcre2"],
 )
 
+# cc_import(
+#     name = "pcre2_static",
+#     static_library = "libpcre2.a",
+# )
+# filegroup(
+#     name = "pcre2_static",
+#     srcs = [":pcre2"],
+#     output_group = "libpcre2.a",
+#     # output_group = "libpcre2.so",
+#     visibility = ["//visibility:public"],
+# )
+
 # TODO: this expands to no files?
 # filegroup(
 #     name = "pcre2_shared_object",
@@ -85,9 +98,12 @@ cc_binary(
 #     # output_group = "libpcre2.so",
 #     visibility = ["//visibility:public"],
 # )
+
+# TODO: we can't use this as a dep in cmake rules because it doesn't have the same provider info
 # TODO: this is still experimental in rules_cc and will be ported from native rule in the future
-cc_shared_library(
-    name = "pcre2_shared",
-    deps = [":pcre2"],
-    visibility = ["//visibility:public"],
-)
+# cc_shared_library(
+#     name = "pcre2_shared",
+#     deps = [":pcre2"],
+#     shared_lib_name = "libpcre2.so",
+#     visibility = ["//visibility:public"],
+# )

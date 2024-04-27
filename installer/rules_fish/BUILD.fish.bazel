@@ -8,87 +8,26 @@ filegroup(
     srcs = glob(["**"]),
 )
 
-# find all targets that depend on a target:
-# bazel query --universe_scope=//... 'allrdeps(//:mylib)'
-# bazel query --universe_scope=//experimental/storage/... 'allrdeps(//third_party/postgres/servers/postgres15:postgres)'
-
-# TODO: wrap this whole target in a cc_binary - https://docs.bazel.build/versions/master/be/c-cpp.html#cc_binary for it to be runnable?
+# TODO: why, in some other context, is there an extra file from pcre2?
 
 # https://github.com/fish-shell/fish-shell/tree/3.7.1?tab=readme-ov-file#dependencies-1
 cmake(
     name = "fish",
     lib_source = ":srcs",
-    # build_args = ["-DFISH_USE_SYSTEM_PCRE2=OFF"],
     generate_args = [
-        # "-DFISH_USE_SYSTEM_PCRE2=OFF",  # NOTE: can toggle this to make it break so we can see cmake output
-        "-DFISH_USE_SYSTEM_PCRE2=ON",
+        "-DFISH_USE_SYSTEM_PCRE2=ON",  # controls whether cmake will git fetch pcre2 and build it or if ON, use provided pcre2
         "-DMAC_CODESIGN_ID=OFF",
         "-DWITH_GETTEXT=OFF",
-        # TODO: only want 2nd entry here ...
-        # TODO: depend on new shared target
-        "-DSYS_PCRE2_LIB=$(execpath @fish_toolchains//pcre2:pcre2_shared)",
-        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib/libpcre2.so",
-
+        "-DSYS_PCRE2_LIB=$(execpath @fish_toolchains//pcre2:pcre2)",
         # "-DCMAKE_INSTALL_PREFIX=.",
-        # TODO: HERE: build failing - something about undefined _32 variables and functions in pcre2?
-        # TODO: any way to use the env where we have make variable substitution and use that value in args here?
-        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib",
-        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/include",
-        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps",
-        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib/libpcre2.a",
-        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib/libpcre2.so",
-        # "-DSYS_PCRE2_INCLUDE_DIR=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/include",
-        # A "normal" sys dependency of SYS_PCRE2_LIB would be SYS_PCRE2_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libpcre2-32.so
-        # the cmake build depends on a file named like this, but the pcre2 from bazel outputs nothing like this? see cmake file:
-        # https://github.com/fish-shell/fish-shell/blob/80394ea4e38138e0ce0bf23b016dc931e22ff788/cmake/PCRE2.cmake#L12
-        # so do we have anything like this that we can patch in with some symlink bazel nonsense? I hate needing a file
-        # by that name, but what can you do... And how do we know we have something like this? How does one read an .so file?
-        # we can comepare that file to bazel-out/k8-fastbuild/bin/external/pcre2\~10.43/libpcre2.so with
-        # nm -gD myfile
-        # and see that they are actually completely different - the libpcre from bazel is built with width 8 instead of 32.
-        # So we need to tell fish cmake that too. do we set WCHAR_T_BITS or PCRE2_WIDTH? Not clear that it will even work like this.
-        # "-DWCHAR_T_BITS=8",
-        # NO this didn't work... devistating. No idea where to go from here. Fish definitely only supports width 16 or 32.
-        # "-DPCRE2_CODE_UNIT_WIDTH=8",
-        # "-DPCRE2_WIDTH=8",
-        # "-DSYS_PCRE2_LIB=/usr/lib/x86_64-linux-gnu/libpcre2-32.so",
     ],
-    # build_args = [
-    #     "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib",
-    # ],
-    # /home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/34/execroot/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/CMakeCache.txt:SYS_PCRE2_LIB:FILEPATH=SYS_PCRE2_LIB-NOTFOUND
-    # /home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/34/execroot/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/CMakeCache.txt:fishlib_LIB_DEPENDS:STATIC=general;/usr/lib/x86_64-linux-gnu/libcurses.so;general;/usr/lib/x86_64-linux-gnu/libtinfo.so;general;dl;general;SYS_PCRE2_LIB-NOTFOUND;
-    # TODO need to set an env SYS_PCRE2_LIB to /tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib?
-    # that feels unreliable? OH you can use make substitution for paths... how does that help us with lib though?
-    # env = {"SYS_PCRE2_LIB": "$(execpaths @pcre2//:pcre2)"},
-    # TODO: would be better to have a target that's just the .so file output and use execpath singular?
-    # env = {"SYS_PCRE2_LIB": "$(execpaths @fish_toolchains//pcre2:pcre2)"},
-    # deps = ["@pcre2//:pcre2"],
     # TODO: can we drop external repo name?
     deps = [
         "@fish_toolchains//pcre2:pcre2",
-        # "@fish_toolchains//pcre2:pcre2_shared",
-        # "@fish_toolchains//pcre2:pcre2_shared_object",
     ],
-    data = [
-        "@fish_toolchains//pcre2:pcre2_shared",
-    ],
-
-    # deps = ["//pcre2:pcre2"],
-    # TODO: HERE: update deps to internal path?
-    install = False,
-    # install = True,
-    # out_bin_dir = ".",
-    # out_bin_dir = "./",
-    # out_bin_dir = "../",
-    # AHA! Needed this path which we would never have found without fixing paths for sandbox. Would prefer to just have make output a better dir.
-    # TODO: can we set default args for fish at build time? It will try to pull user config from HOME and unexpected things will happen.
+    # TODO: how to fully capture outputs from make install? Will need share/ output for a lot of functionality.
+    install = True,
     out_bin_dir = "../fish.build_tmpdir/",
-    # out_bin_dir = "fish/",
-    # out_bin_dir = "fish/fish/",
-    # out_include_dir = "../",
-    # out_include_dir = "",
-    # out_lib_dir = "../",
     out_lib_dir = "../fish.build_tmpdir/",
     out_binaries = [
         "fish",
@@ -96,41 +35,8 @@ cmake(
         "fish_key_reader",
         "fish_test_helper",
     ],
-    # out_binaries = ["fish"],
-    # out_binaries = [],
     out_shared_libs = [],
     out_static_libs = ["libfishlib.a"],
-    # out_headers_only = True,  # NOTE: setting this will make the build succeed but output nothing which could be helpful
-    # out_binaries = ["fish", "fish_indent", "fish_key_reader"],
-    # build_data = [], # TODO: use toolchain PCRE2 target here? AH I need ncurses too.
-    # https://invisible-island.net/archives/ncurses/
-    # NOTE: I am skipping over ncurses for now with `sudo apt install libncurses-dev` on debian.
-    # HA we will have to include PCRE2, the resolver in cmake doesn't seem to work in this context.
-    # Again, working around for now: `sudo apt install libpcre2-dev`
-    # WOW this build is tremendously slow - ran 118s on desktop.
-    # Got error that outputs from cmake aren't as expected. There are extra steps and directories
-    # in Fish's build instructions that are hard to recreate here, so installing cmake and debugging
-    # in another directory for manual build. `sudo apt install cmake`
-    # The manual cmake tool less than a second, so not sure where the time is going.
-    # We don't need the `mkdir build; cd build; cmake ..`, just running `cmake .; make` produces
-    # a working binary `fish`.
-    # OH I can just read output from cmake here: bazel-bin/external/_main\~download_fish\~fish_toolchains/fish/fish_foreign_cc/CMake.log
-    # Hmm seems like it JUST WORKED and I've miss-mapped outputs or something?
-    # cd /home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/7/execroot/_main/external/_main\~download_fish\~fish_toolchains/fish/
-    # cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/7/execroot/_main/external/_main~download_fish~fish_toolchains/fish/fish -DCMAKE_RANLIB= -DMAC_CODESIGN_ID=OFF -DWITH_GETTEXT=OFF -G 'Unix Makefiles' (pwd)
-    # pfft the sandbox symlinks to files that have been cleaned up - this is worthless.
-    # In the manual fish dir:
-    # mkdir build; cd build
-    # cmake ..
-    # cmake --build . --config Release
-    # DEBUG
-    # bazel build --sandbox_debug @fish_toolchains//fish:fish
-    # in another tab
-    # watch "ls -l ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/1/execroot/_main/external/_main\~download_fish\~fish_toolchains/fish/"
-    # where the sandbox number is assumed and can be verified when build fails
-    # OMG I've been looking in the wrong sandbox cache, should be like this:
-    # ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/5/execroot/_main/bazel-out/k8-fastbuild/bin/external/_main\~download_fish\~fish_toolchains/fish/
-    # i.e. 1/execroot/_main/bazel-out/... instead of 1/execroot/_main/external/...
 )
 
 # from example:
@@ -147,3 +53,51 @@ filegroup(
         "//conditions:default": "fish",
     }),
 )
+
+# find all targets that depend on a target:
+# bazel query --universe_scope=//... 'allrdeps(//:mylib)'
+# bazel query --universe_scope=//experimental/storage/... 'allrdeps(//third_party/postgres/servers/postgres15:postgres)'
+#
+# out_headers_only = True,  # NOTE: setting this will make the build succeed but output nothing which could be helpful
+# out_binaries = ["fish", "fish_indent", "fish_key_reader"],
+# build_data = [], # TODO: use toolchain PCRE2 target here? AH I need ncurses too.
+# https://invisible-island.net/archives/ncurses/
+# NOTE: I am skipping over ncurses for now with `sudo apt install libncurses-dev` on debian.
+# HA we will have to include PCRE2, the resolver in cmake doesn't seem to work in this context.
+# Again, working around for now: `sudo apt install libpcre2-dev`
+# WOW this build is tremendously slow - ran 118s on desktop.
+# Got error that outputs from cmake aren't as expected. There are extra steps and directories
+# in Fish's build instructions that are hard to recreate here, so installing cmake and debugging
+# in another directory for manual build. `sudo apt install cmake`
+# The manual cmake tool less than a second, so not sure where the time is going.
+# We don't need the `mkdir build; cd build; cmake ..`, just running `cmake .; make` produces
+# a working binary `fish`.
+# OH I can just read output from cmake here: bazel-bin/external/_main\~download_fish\~fish_toolchains/fish/fish_foreign_cc/CMake.log
+# Hmm seems like it JUST WORKED and I've miss-mapped outputs or something?
+# cd /home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/7/execroot/_main/external/_main\~download_fish\~fish_toolchains/fish/
+# cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/7/execroot/_main/external/_main~download_fish~fish_toolchains/fish/fish -DCMAKE_RANLIB= -DMAC_CODESIGN_ID=OFF -DWITH_GETTEXT=OFF -G 'Unix Makefiles' (pwd)
+# pfft the sandbox symlinks to files that have been cleaned up - this is worthless.
+# In the manual fish dir:
+# mkdir build; cd build
+# cmake ..
+# cmake --build . --config Release
+# DEBUG
+# bazel build --sandbox_debug @fish_toolchains//fish:fish
+# in another tab
+# watch "ls -l ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/1/execroot/_main/external/_main\~download_fish\~fish_toolchains/fish/"
+# where the sandbox number is assumed and can be verified when build fails
+# OMG I've been looking in the wrong sandbox cache, should be like this:
+# ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/5/execroot/_main/bazel-out/k8-fastbuild/bin/external/_main\~download_fish\~fish_toolchains/fish/
+# i.e. 1/execroot/_main/bazel-out/... instead of 1/execroot/_main/external/...
+#
+# A "normal" sys dependency of SYS_PCRE2_LIB would be SYS_PCRE2_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libpcre2-32.so
+# the cmake build depends on a file named like this, but the pcre2 from bazel outputs nothing like this? see cmake file:
+# https://github.com/fish-shell/fish-shell/blob/80394ea4e38138e0ce0bf23b016dc931e22ff788/cmake/PCRE2.cmake#L12
+# so do we have anything like this that we can patch in with some symlink bazel nonsense? I hate needing a file
+# by that name, but what can you do... And how do we know we have something like this? How does one read an .so file?
+# we can comepare that file to bazel-out/k8-fastbuild/bin/external/pcre2\~10.43/libpcre2.so with
+# nm -gD myfile
+# and see that they are actually completely different - the libpcre from bazel is built with width 8 instead of 32.
+# So we need to tell fish cmake that too. do we set WCHAR_T_BITS or PCRE2_WIDTH? Not clear that it will even work like this.
+# "-DWCHAR_T_BITS=8",
+# NO this didn't work... devistating. No idea where to go from here. Fish definitely only supports width 16 or 32.

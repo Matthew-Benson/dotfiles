@@ -70,7 +70,8 @@ fish_binary = rule(
         # ),
         "_fish": attr.label(
             # default = Label("@fish//:bin/fish"),
-            default = Label("@fish_toolchains//fish:fish_bin"),
+            # default = Label("@fish_toolchains//fish:fish_bin"),
+            default = Label("@fish_toolchains//fish:fish"),
             allow_single_file = True,
             executable = True,
             cfg = "exec",
