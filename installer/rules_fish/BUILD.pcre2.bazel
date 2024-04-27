@@ -71,6 +71,27 @@ cc_library(
     linkstatic = True,  # TODO: how to disable .pic.a file output?
 )
 
+# bazel cquery @fish_toolchains//pcre2:pcre2 --output=files
+# bazel-out/k8-opt-exec-ST-13d3ddad9198/bin/external/_main~download_fish~fish_toolchains/pcre2/libpcre2.a
+# bazel-out/k8-opt-exec-ST-13d3ddad9198/bin/external/_main~download_fish~fish_toolchains/pcre2/libpcre2.pic.a
+# bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/pcre2/libpcre2.a
+#
+# Oh, we can query and see OutputGroupInfo providers (https://bazel.build/rules/lib/providers/OutputGroupInfo)
+# to see what these are for this cc_library. We tried to make a filegroup() with output_group by file name,
+# but it seems they explicitly set output groups! We can query that - drop keys() to see all the info. providers(target)
+# just returns a dict so you can transform however you need. See query syntax docs.
+# https://bazel.build/query/cquery#defining-the-output-format-using-starlark
+# bazel cquery @fish_toolchains//pcre2:pcre2 --output=starlark --starlark:expr="providers(target).keys()"
+# bazel cquery @fish_toolchains//pcre2:pcre2 --output=starlark --starlark:expr="providers(target)['OutputGroupInfo']"
+
+filegroup(
+    name = "pcre2_static",
+    srcs = [":pcre2"],
+    output_group = "archive",
+    # output_group = "libpcre2.so",
+    visibility = ["//visibility:public"],
+)
+
 cc_binary(
     name = "pcre2demo",
     srcs = ["src/pcre2demo.c"],
@@ -81,13 +102,6 @@ cc_binary(
 # cc_import(
 #     name = "pcre2_static",
 #     static_library = "libpcre2.a",
-# )
-# filegroup(
-#     name = "pcre2_static",
-#     srcs = [":pcre2"],
-#     output_group = "libpcre2.a",
-#     # output_group = "libpcre2.so",
-#     visibility = ["//visibility:public"],
 # )
 
 # TODO: this expands to no files?

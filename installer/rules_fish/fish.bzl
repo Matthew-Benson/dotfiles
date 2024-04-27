@@ -18,6 +18,7 @@ def _fish_binary_impl(ctx):
             # TODO: and should srcs be handled with rlocation or is this going to work well?
             "{SRCS}": src.path,
             # "{FISH}": "_main/" + ctx.file._fish.path,
+            # Ah you can maybe get this weird path from something like bazel cquery @fish_toolchains//pcre2:pcre2 --output=starlark
             "{FISH}": "_main/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/fish",
         },
     )
@@ -70,8 +71,8 @@ fish_binary = rule(
         # ),
         "_fish": attr.label(
             # default = Label("@fish//:bin/fish"),
-            # default = Label("@fish_toolchains//fish:fish_bin"),
-            default = Label("@fish_toolchains//fish:fish"),
+            default = Label("@fish_toolchains//fish:fish_bin"),
+            # default = Label("@fish_toolchains//fish:fish"),
             allow_single_file = True,
             executable = True,
             cfg = "exec",
