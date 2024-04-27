@@ -16,9 +16,11 @@ module(name = "installer")
 # which can be undone with $ rm -rf /nix
 # TODO: add ~/.config/fish/conf.d/nix-env.fish to chezmoi? Add bash/zsh sources?
 bazel_dep(name = "rules_nixpkgs_core", version = "0.10.0")
+bazel_dep(name = "rules_cc", version = "0.0.9")
 bazel_dep(name = "rules_foreign_cc", version = "0.10.1")
+bazel_dep(name = "bazel_skylib", version = "1.6.1")
 bazel_dep(name = "platforms", version = "0.0.9")
-bazel_dep(name = "pcre2", version = "10.43")
+# bazel_dep(name = "pcre2", version = "10.43")
 
 nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
 nix_repo.default(name = "nixpkgs")

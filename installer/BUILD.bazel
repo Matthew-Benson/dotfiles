@@ -41,4 +41,6 @@ load("//rules_fish:fish.bzl", "fish_binary")
 fish_binary(
     name = "install_tree",
     srcs = ["install_tree.fish"],
+    # TODO: this doesn't work because fish can't find the .so file at runtime... How is this normally handled in cc programs?
+    # deps = ["@fish_toolchains//pcre2:pcre2_shared"],
 )

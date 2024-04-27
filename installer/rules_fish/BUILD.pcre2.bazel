@@ -1,21 +1,93 @@
-load("@rules_foreign_cc//foreign_cc:defs.bzl", "cmake")
+# Forked from https://github.com/PCRE2Project/pcre2/blob/05aafb2e308e5529e3fd5fed45bae253eebed75b/BUILD.bazel
+# with modification to template PCRE2_CODE_UNIT_WIDTH.
 
-# TODO: rename functions to pcre2?
-# TODO: this repo has a root BUILD.bazel already?
-# https://github.com/PCRE2Project/pcre2/blob/master/BUILD.bazel
-filegroup(
-    name = "srcs",
-    srcs = glob(["**"]),
+load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+
+copy_file(
+    name = "config_h_generic",
+    src = "src/config.h.generic",
+    out = "src/config.h",
+)
+
+copy_file(
+    name = "pcre2_h_generic",
+    src = "src/pcre2.h.generic",
+    out = "src/pcre2.h",
+)
+
+copy_file(
+    name = "pcre2_chartables_c",
+    src = "src/pcre2_chartables.c.dist",
+    out = "src/pcre2_chartables.c",
+)
+
+# Removed src/pcre2_ucptables.c below because it is #included in
+# src/pcre2_tables.c. Also fixed typo: ckdint should be chkdint.
+# PH, 22-March-2023.
+cc_library(
+    name = "pcre2",
+    srcs = [
+        "src/pcre2_auto_possess.c",
+        "src/pcre2_chkdint.c",
+        "src/pcre2_compile.c",
+        "src/pcre2_config.c",
+        "src/pcre2_context.c",
+        "src/pcre2_convert.c",
+        "src/pcre2_dfa_match.c",
+        "src/pcre2_error.c",
+        "src/pcre2_extuni.c",
+        "src/pcre2_find_bracket.c",
+        "src/pcre2_maketables.c",
+        "src/pcre2_match.c",
+        "src/pcre2_match_data.c",
+        "src/pcre2_newline.c",
+        "src/pcre2_ord2utf.c",
+        "src/pcre2_pattern_info.c",
+        "src/pcre2_script_run.c",
+        "src/pcre2_serialize.c",
+        "src/pcre2_string_utils.c",
+        "src/pcre2_study.c",
+        "src/pcre2_substitute.c",
+        "src/pcre2_substring.c",
+        "src/pcre2_tables.c",
+        "src/pcre2_ucd.c",
+        "src/pcre2_valid_utf.c",
+        "src/pcre2_xclass.c",
+        ":pcre2_chartables_c",
+    ],
+    hdrs = glob(["src/*.h"]) + [
+        ":config_h_generic",
+        ":pcre2_h_generic",
+    ],
+    defines = [
+        "HAVE_CONFIG_H",
+        "PCRE2_CODE_UNIT_WIDTH={PCRE2_CODE_UNIT_WIDTH}",
+        "PCRE2_STATIC",
+    ],
+    includes = ["src"],
+    strip_include_prefix = "src",
     visibility = ["//visibility:public"],
 )
 
-cmake(
-    name = "pcre2",
-    cache_entries = {
-        "CMAKE_C_FLAGS": "-fPIC",
-    },
-    lib_source = ":srcs",
-    out_shared_libs = [],
-    # out_static_libs = ["libpcrecpp.a"],
-    out_static_libs = ["libpcre.a"],
+cc_binary(
+    name = "pcre2demo",
+    srcs = ["src/pcre2demo.c"],
+    visibility = ["//visibility:public"],
+    deps = [":pcre2"],
+)
+
+# TODO: this expands to no files?
+# filegroup(
+#     name = "pcre2_shared_object",
+#     srcs = [":pcre2"],
+#     output_group = "pcre2/libpcre2.so",
+#     # output_group = "libpcre2.so",
+#     visibility = ["//visibility:public"],
+# )
+# TODO: this is still experimental in rules_cc and will be ported from native rule in the future
+cc_shared_library(
+    name = "pcre2_shared",
+    deps = [":pcre2"],
+    visibility = ["//visibility:public"],
 )

@@ -24,6 +24,11 @@ cmake(
         "-DFISH_USE_SYSTEM_PCRE2=ON",
         "-DMAC_CODESIGN_ID=OFF",
         "-DWITH_GETTEXT=OFF",
+        # TODO: only want 2nd entry here ...
+        # TODO: depend on new shared target
+        "-DSYS_PCRE2_LIB=$(execpath @fish_toolchains//pcre2:pcre2_shared)",
+        # "-DSYS_PCRE2_LIB=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib/libpcre2.so",
+
         # "-DCMAKE_INSTALL_PREFIX=.",
         # TODO: HERE: build failing - something about undefined _32 variables and functions in pcre2?
         # TODO: any way to use the env where we have make variable substitution and use that value in args here?
@@ -43,7 +48,9 @@ cmake(
         # and see that they are actually completely different - the libpcre from bazel is built with width 8 instead of 32.
         # So we need to tell fish cmake that too. do we set WCHAR_T_BITS or PCRE2_WIDTH? Not clear that it will even work like this.
         # "-DWCHAR_T_BITS=8",
-        "-DPCRE2_CODE_UNIT_WIDTH=8",
+        # NO this didn't work... devistating. No idea where to go from here. Fish definitely only supports width 16 or 32.
+        # "-DPCRE2_CODE_UNIT_WIDTH=8",
+        # "-DPCRE2_WIDTH=8",
         # "-DSYS_PCRE2_LIB=/usr/lib/x86_64-linux-gnu/libpcre2-32.so",
     ],
     # build_args = [
@@ -54,7 +61,21 @@ cmake(
     # TODO need to set an env SYS_PCRE2_LIB to /tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish.ext_build_deps/lib?
     # that feels unreliable? OH you can use make substitution for paths... how does that help us with lib though?
     # env = {"SYS_PCRE2_LIB": "$(execpaths @pcre2//:pcre2)"},
-    deps = ["@pcre2//:pcre2"],
+    # TODO: would be better to have a target that's just the .so file output and use execpath singular?
+    # env = {"SYS_PCRE2_LIB": "$(execpaths @fish_toolchains//pcre2:pcre2)"},
+    # deps = ["@pcre2//:pcre2"],
+    # TODO: can we drop external repo name?
+    deps = [
+        "@fish_toolchains//pcre2:pcre2",
+        # "@fish_toolchains//pcre2:pcre2_shared",
+        # "@fish_toolchains//pcre2:pcre2_shared_object",
+    ],
+    data = [
+        "@fish_toolchains//pcre2:pcre2_shared",
+    ],
+
+    # deps = ["//pcre2:pcre2"],
+    # TODO: HERE: update deps to internal path?
     install = False,
     # install = True,
     # out_bin_dir = ".",
