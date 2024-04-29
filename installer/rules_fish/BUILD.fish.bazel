@@ -44,6 +44,11 @@ cmake(
     out_static_libs = ["libfishlib.a"],
 )
 
+# TODO: add test targets that use this toolchain with tests from
+# https://github.com/fish-shell/fish-shell/tree/master/tests
+# especially the checks directory.
+# NOTE: we also need to run that in some blank-slate container environment. Should also test MacOS manually.
+
 # from example:
 # https://github.com/bazelbuild/rules_foreign_cc/blob/b136e6c52da63da300b0f588c8a214d97b0d15cd/examples/third_party/gn/BUILD.gn.bazel#L45
 config_setting(
