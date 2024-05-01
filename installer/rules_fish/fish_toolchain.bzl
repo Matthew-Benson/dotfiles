@@ -1,9 +1,6 @@
 FishInfo = provider(
-    doc = "Information about how to invoke the barc compiler.",
-    # In the real world, compiler_path and system_lib might hold File objects,
-    # but for simplicity they are strings for this example. arch_flags is a list
-    # of strings.
-    fields = ["compiler_path", "system_lib", "arch_flags"],
+    doc = "Information about how to invoke fish shell.",
+    fields = [],
 )
 
 def _fish_toolchain_impl(ctx):

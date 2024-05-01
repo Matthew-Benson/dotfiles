@@ -1,15 +1,8 @@
-# load(":download.bzl", "fish_download_release")
 load(":fish_toolchain.bzl", "fish_toolchain")
 
 package(default_visibility = ["//visibility:private"])
 
 exports_files(["fish_wrapper.sh", "rlocation.sh", "bazel.fish", "extension.bzl", "fish_toolchain.bzl"])
-
-# fish_download_release(
-#     name = "fishdownload",
-#     version = "3.7.1",
-#     sha256 = "614c9f5643cd0799df391395fa6bbc3649427bb839722ce3b114d3bbc1a3b250",
-# )
 
 toolchain_type(
     name = "toolchain_type",

@@ -8,9 +8,6 @@ filegroup(
     srcs = glob(["**"]),
 )
 
-# TODO: why, in some other context, is there an extra file from pcre2?
-
-# https://github.com/fish-shell/fish-shell/tree/3.7.1?tab=readme-ov-file#dependencies-1
 cmake(
     name = "fish",
     lib_source = ":srcs",
@@ -18,20 +15,18 @@ cmake(
         "-DFISH_USE_SYSTEM_PCRE2=ON",  # controls whether cmake will git fetch pcre2 and build it or if ON, use provided pcre2
         "-DMAC_CODESIGN_ID=OFF",
         "-DWITH_GETTEXT=OFF",
-        "-DSYS_PCRE2_LIB=$(execpath @fish_toolchains//pcre2:pcre2_static)",
-        # "-DSYS_PCRE2_LIB=$(execpath @fish_toolchains//pcre2:pcre2)",
-        # "-DSYS_PCRE2_LIB=$(execpaths @fish_toolchains//pcre2:pcre2)", # TODO: this is giving something more like rootpath which doesn't work.
+        "-DSYS_PCRE2_LIB=$(execpath //pcre2:pcre2_static)",
         # "-DCMAKE_INSTALL_PREFIX=.",
     ],
-    # TODO: can we drop external repo name?
     deps = [
-        "@fish_toolchains//pcre2:pcre2",
+        "//pcre2:pcre2",
     ],
     data = [
-        "@fish_toolchains//pcre2:pcre2_static",
+        "//pcre2:pcre2_static",
     ],
     # TODO: how to fully capture outputs from make install? Will need share/ output for a lot of functionality.
     install = True,
+    # TODO: how to get cmake to output to a normal directory?
     out_bin_dir = "../fish.build_tmpdir/",
     out_lib_dir = "../fish.build_tmpdir/",
     out_binaries = [
@@ -44,13 +39,6 @@ cmake(
     out_static_libs = ["libfishlib.a"],
 )
 
-# TODO: add test targets that use this toolchain with tests from
-# https://github.com/fish-shell/fish-shell/tree/master/tests
-# especially the checks directory.
-# NOTE: we also need to run that in some blank-slate container environment. Should also test MacOS manually.
-
-# from example:
-# https://github.com/bazelbuild/rules_foreign_cc/blob/b136e6c52da63da300b0f588c8a214d97b0d15cd/examples/third_party/gn/BUILD.gn.bazel#L45
 config_setting(
     name = "windows",
     constraint_values = ["@platforms//os:windows"],
@@ -63,51 +51,3 @@ filegroup(
         "//conditions:default": "fish",
     }),
 )
-
-# find all targets that depend on a target:
-# bazel query --universe_scope=//... 'allrdeps(//:mylib)'
-# bazel query --universe_scope=//experimental/storage/... 'allrdeps(//third_party/postgres/servers/postgres15:postgres)'
-#
-# out_headers_only = True,  # NOTE: setting this will make the build succeed but output nothing which could be helpful
-# out_binaries = ["fish", "fish_indent", "fish_key_reader"],
-# build_data = [], # TODO: use toolchain PCRE2 target here? AH I need ncurses too.
-# https://invisible-island.net/archives/ncurses/
-# NOTE: I am skipping over ncurses for now with `sudo apt install libncurses-dev` on debian.
-# HA we will have to include PCRE2, the resolver in cmake doesn't seem to work in this context.
-# Again, working around for now: `sudo apt install libpcre2-dev`
-# WOW this build is tremendously slow - ran 118s on desktop.
-# Got error that outputs from cmake aren't as expected. There are extra steps and directories
-# in Fish's build instructions that are hard to recreate here, so installing cmake and debugging
-# in another directory for manual build. `sudo apt install cmake`
-# The manual cmake tool less than a second, so not sure where the time is going.
-# We don't need the `mkdir build; cd build; cmake ..`, just running `cmake .; make` produces
-# a working binary `fish`.
-# OH I can just read output from cmake here: bazel-bin/external/_main\~download_fish\~fish_toolchains/fish/fish_foreign_cc/CMake.log
-# Hmm seems like it JUST WORKED and I've miss-mapped outputs or something?
-# cd /home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/7/execroot/_main/external/_main\~download_fish\~fish_toolchains/fish/
-# cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/mbenson/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/7/execroot/_main/external/_main~download_fish~fish_toolchains/fish/fish -DCMAKE_RANLIB= -DMAC_CODESIGN_ID=OFF -DWITH_GETTEXT=OFF -G 'Unix Makefiles' (pwd)
-# pfft the sandbox symlinks to files that have been cleaned up - this is worthless.
-# In the manual fish dir:
-# mkdir build; cd build
-# cmake ..
-# cmake --build . --config Release
-# DEBUG
-# bazel build --sandbox_debug @fish_toolchains//fish:fish
-# in another tab
-# watch "ls -l ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/1/execroot/_main/external/_main\~download_fish\~fish_toolchains/fish/"
-# where the sandbox number is assumed and can be verified when build fails
-# OMG I've been looking in the wrong sandbox cache, should be like this:
-# ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/sandbox/linux-sandbox/5/execroot/_main/bazel-out/k8-fastbuild/bin/external/_main\~download_fish\~fish_toolchains/fish/
-# i.e. 1/execroot/_main/bazel-out/... instead of 1/execroot/_main/external/...
-#
-# A "normal" sys dependency of SYS_PCRE2_LIB would be SYS_PCRE2_LIB:FILEPATH=/usr/lib/x86_64-linux-gnu/libpcre2-32.so
-# the cmake build depends on a file named like this, but the pcre2 from bazel outputs nothing like this? see cmake file:
-# https://github.com/fish-shell/fish-shell/blob/80394ea4e38138e0ce0bf23b016dc931e22ff788/cmake/PCRE2.cmake#L12
-# so do we have anything like this that we can patch in with some symlink bazel nonsense? I hate needing a file
-# by that name, but what can you do... And how do we know we have something like this? How does one read an .so file?
-# we can comepare that file to bazel-out/k8-fastbuild/bin/external/pcre2\~10.43/libpcre2.so with
-# nm -gD myfile
-# and see that they are actually completely different - the libpcre from bazel is built with width 8 instead of 32.
-# So we need to tell fish cmake that too. do we set WCHAR_T_BITS or PCRE2_WIDTH? Not clear that it will even work like this.
-# "-DWCHAR_T_BITS=8",
-# NO this didn't work... devistating. No idea where to go from here. Fish definitely only supports width 16 or 32.

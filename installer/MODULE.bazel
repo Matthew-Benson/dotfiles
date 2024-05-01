@@ -1,73 +1,16 @@
 module(name = "installer")
 
-# TODO: today, nix-build must be in path, but there's some will to move this into bazel in the future
-# TODO: create a 0 step with bazelisk for nix-build.
-# TODO: doc manually installing just nix-build: https://releases.nixos.org/nix/nix-2.20.1/nix-2.20.1-$system.tar.xz
-# TODO: need to download and explore the tar:
-# https://releases.nixos.org/nix/nix-2.20.1/nix-2.20.1-x86_64-linux.tar.xz
-# exploring,I see nix-2.20.1-x86_64-linux/store/iwgkck1d64s5f26ngln540hpf06g28py-nix-2.20.1/bin/nix-build
-# in the tar ball.
-# tar -xf nix-2.20.1-x86_64-linux.tar.xz -C nix
-# cd nix
-# mv nix-2.20.1-x86_64-linux/store/iwgkck1d64s5f26ngln540hpf06g28py-nix-2.20.1/bin/nix-build ~/.local/bin/
-# mv nix-2.20.1-x86_64-linux/store/iwgkck1d64s5f26ngln540hpf06g28py-nix-2.20.1/bin/nix ~/.local/bin/
-# hmm yeah that seems to give you something broken... many commands end in "no such file or directory"
-# We could proceed with single user install: sh <(curl -L https://nixos.org/nix/install) --no-daemon
-# which can be undone with $ rm -rf /nix
-# TODO: add ~/.config/fish/conf.d/nix-env.fish to chezmoi? Add bash/zsh sources?
-bazel_dep(name = "rules_nixpkgs_core", version = "0.10.0")
 bazel_dep(name = "rules_cc", version = "0.0.9")
 bazel_dep(name = "rules_foreign_cc", version = "0.10.1")
 bazel_dep(name = "bazel_skylib", version = "1.6.1")
 bazel_dep(name = "platforms", version = "0.0.9")
-# bazel_dep(name = "pcre2", version = "10.43")
 
-nix_repo = use_extension("@rules_nixpkgs_core//extensions:repository.bzl", "nix_repo")
-nix_repo.default(name = "nixpkgs")
-
-# register nixpkg sources
-nix_repo.github(
-    name = "remote_nixpkgs",
-    sha256 = "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01",
-    tag = "22.05",
-)
-nix_repo.http(
-    name = "http_nixpkgs",
-    sha256 = "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01",
-    strip_prefix = "nixpkgs-22.05",
-    url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/22.05.tar.gz",
-)
-
-use_repo(
-    nix_repo,
-    "http_nixpkgs",
-    "nixpkgs",
-    "remote_nixpkgs",
-)
-
-# register packages
-nix_pkg = use_extension("@rules_nixpkgs_core//extensions:package.bzl", "nix_pkg")
-
-# TODO: wow fish from nixpkgs is 3.4.1 which is pretty old! Would prefer to write our own toolchain for it.
-nix_pkg.attr(
-    name = "fish",
-    attr = "fish",
-    repo = "@remote_nixpkgs",
-)
-
-use_repo(nix_pkg, "fish")
-
-# TODO: https://sourcegraph.com/search?q=context:global+native.register_toolchains+lang:starlark&patternType=keyword&sm=0
 fish = use_extension("//rules_fish:extension.bzl", "download_fish")
 fish.toolchain(version = "3.7.1")
 use_repo(fish, "fish_toolchains")
 register_toolchains("@fish_toolchains//:all")
 
-# register_toolchains(
-#     "//rules_fish:fish_linux_toolchain",
-# )
-
-# we could instead do
+# We will need the rust toolchain for fish 3.8.0+ we could take inspiration from bazel-lsp repo:
 # https://github.com/cameron-martin/bazel-lsp/blob/master/MODULE.bazel
 # rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 # rust.toolchain(
@@ -76,40 +19,3 @@ register_toolchains("@fish_toolchains//:all")
 # )
 # use_repo(rust, "rust_toolchains")
 # register_toolchains("@rust_toolchains//:all")
-# so what's up with this? Am I required to do another register_toolchains()?
-# Ah, the go example is so complicated because they have to support a million
-# use-cases that will never and cannot matter for us. They also support WORKSPACE
-# and it'll never matter for me, so I'm not supporting it.
-# oh the rust bzlmod ext has similar logic, just register_toolchains = False
-# and you have to explicitly register. I think that's more clear.
-# https://www.jayconrod.com/posts/111/writing-bazel-rules--platforms-and-toolchains
-# bazel query --output=build @fish_toolchains//:all
-# bazel build '//:install_tree' --toolchain_resolution_debug='//rules_fish:toolchain_type'
-# bazel query "@fish_toolchains//:all"
-#
-# Did bazel build --sandbox_debug @fish_toolchains//:all
-# and inspected the sandbox output to see if that helps us understand
-# ll ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/external/_main\~download_fish\~fish_toolchains/
-# cat ~/.cache/bazel/_bazel_mbenson/3e315040079359611767152ebe62754d/external/_main\~download_fish\~fish_toolchains/WORKSPACE
-# # DO NOT EDIT: automatically generated WORKSPACE file for fish_multiple_toolchains rule
-# workspace(name = "_main~download_fish~fish_toolchains")
-# there is a generated workspace for fish_multiple_toolchains - can we only have 1 repo_rule implementation in the call stack
-# of use_repo I wonder? Does this explain why moving functions around changed everything?
-# TODO: add a CONTRIBUTING with debugging tips and commands - see bottll //experimental/users/mbenson/bazel_vitest_error_demo/README.md
-# and https://bazel.build/remote/output-directories
-# set HASH "(echo -n $PWD | md5sum | awk '{ print $1 }')"
-# ll $HOME/.cache/bazel/_bazel_root/$HASH/external/_main\~download_fish\~fish_toolchains/
-# TODO: needs changed when we rename these rules, but is there an automated way to get this? I think YES
-# but involves some bazel query?
-# TODO: HERE: now we need to actually build fish i.e. the binary and make it at least "work-ish" from that non-standard install path.
-# we will need c++ 11 compiler (g++ 4.8+ or clang 3.3+ (how do we decide?)), CMake (pretty sure we get this in foreign_cc) and
-# we need to deal with PCRE2 dependency for c++ builds for now - their makefile should get it, but we can do better with bazel.
-# This could be leaky for hermitacity?
-# There's a PCRE example in https://bazelbuild.github.io/rules_foreign_cc/main/cmake.html and there's a mirror at
-# "https://mirror.bazel.build/ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz"
-# It is also a cmake project.
-# https://github.com/bazelbuild/rules_foreign_cc/blob/5c34b7136f0dec5d8abf2b840796ec8aef56a7c1/examples/MODULE.bazel#L8
-# TODO: sandbox debug and inspect what comes out from cmake?
-# TODO: inspect brew and nix builds to see what they do
-# TODO: try making cmake() explicitly output the contents of manually running cmake from build dir like regular instructions?
-# TODO: verbose_failures?
