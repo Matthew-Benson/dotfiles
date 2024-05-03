@@ -60,8 +60,10 @@ echo "status current-command: $(status current-command)"
 echo "status fish-path: $(status fish-path)"
 echo "status current-commandline: $(status current-commandline)"
 set -l fish (status fish-path)
-# echo $fish
 $fish --version
+# TODO: --no-config isn't GREAT for user experience, should instead link some config in bazel dirs?
+# $fish --no-config --private
+$fish
 
 # source $BAZEL_FISH; or echo "failed to source $BAZEL_FISH"; and return 1
 # # TODO: how to "or" error check the rlocation when it happens in a subshell? it fails now, probably because we nuked this dep.

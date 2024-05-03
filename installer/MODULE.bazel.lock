@@ -1072,7 +1072,7 @@
   "moduleExtensions": {
     "//rules_fish:extension.bzl%download_fish": {
       "general": {
-        "bzlTransitiveDigest": "KSKBIwIwVW0LkT9Zmfw5GcgkOH3R4oZprVnazrNPWcM=",
+        "bzlTransitiveDigest": "SfWsn2uXf47yRObBXzHPExvOHZT8LJQNKm+7/k1JM3k=",
         "accumulatedFileDigests": {},
         "envVariables": {},
         "generatedRepoSpecs": {

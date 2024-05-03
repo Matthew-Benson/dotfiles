@@ -37,6 +37,7 @@ fish_multiple_toolchains = repository_rule(
         "urls": attr.string_list(default = ["https://github.com/fish-shell/fish-shell/releases/download/{version}/fish-{version}.tar.xz"]),
         "sha256": attr.string(default = "614c9f5643cd0799df391395fa6bbc3649427bb839722ce3b114d3bbc1a3b250"),
         "_fish_build_file": attr.label(
+            # TODO: this label will break
             default = Label("//rules_fish:BUILD.fish.bazel"),
         ),
     },
@@ -58,6 +59,7 @@ def _pcre2_download(repository_ctx, urls, sha256, version):
 
     repository_ctx.template(
         "pcre2/BUILD.bazel",
+        # TODO: this label will break
         repository_ctx.path(Label("//rules_fish:BUILD.pcre2.bazel")),
         executable = False,
         substitutions = {
@@ -127,7 +129,7 @@ def fish_toolchains_single_definition(repository_ctx, version):
     chunks = []
     loads = []
 
-    loads.append("""load(":fish_toolchain.bzl", "fish_toolchain")""")
+    loads.append("""load(":toolchain.bzl", "fish_toolchain")""")
 
     chunks.append("""toolchain_type(
     name = "toolchain_type",
@@ -139,12 +141,6 @@ fish_toolchain(
 )
 """)
 
-    # TODO: These platform references didn't work - did we need another load? Seems that resolved it. see:
-    # bazel query --output=build @fish_toolchains//:all
-    # OH https://bazel.build/extending/platforms
-    # I think we need to pull in https://github.com/bazelbuild/platforms
-    # https://github.com/bazelbuild/rules_go/blob/db019639425b18db040094fb5e34c8c8ca90c864/MODULE.bazel#L12
-    # TODO: how to link the correct toolchain_type and create the platform_common.ToolchainInfo() provider?
     chunks.append("""toolchain(
     name = "fish_linux_toolchain",
     exec_compatible_with = [
@@ -168,30 +164,11 @@ fish_toolchain(
 def fish_toolchains_build_file_content(repository_ctx, versions):
     print("fish_toolchains_build_file_content")
 
-    TOOLCHAIN = """
-FishInfo = provider(
-    doc = "Information about how to invoke the barc compiler.",
-    # In the real world, compiler_path and system_lib might hold File objects,
-    # but for simplicity they are strings for this example. arch_flags is a list
-    # of strings.
-    fields = ["compiler_path", "system_lib", "arch_flags"],
-)
-
-def _fish_toolchain_impl(ctx):
-    toolchain_info = platform_common.ToolchainInfo(
-        fishinfo = FishInfo(),
-    )
-    return [toolchain_info]
-
-fish_toolchain = rule(
-    implementation = _fish_toolchain_impl,
-    attrs = {},
-)
-"""
     repository_ctx.file(
-        "fish_toolchain.bzl",
+        "toolchain.bzl",
+        # TODO: this label will break
+        repository_ctx.read(Label("//rules_fish:fish_toolchain.bzl")),
         executable = False,
-        content = TOOLCHAIN,  # TODO: would be better to read file
     )
 
     loads = [

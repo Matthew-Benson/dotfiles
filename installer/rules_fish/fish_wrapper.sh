@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-# Depends on setting FISH_RLOCATION_PATH at runtime using bazel's make variable function rlocationpath
-
 # --- begin runfiles.bash initialization v3 ---
 # Copy-pasted from the Bazel Bash runfiles library v3.
 set -uo pipefail; set +e; f=bazel_tools/tools/bash/runfiles/runfiles.bash

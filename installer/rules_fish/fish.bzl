@@ -1,42 +1,39 @@
 def _fish_binary_impl(ctx):
     # TODO: clean up this function - provide doc comments?
-    # TODO: when moving to a full-on toolchain, this template should be os-dependant? i.e. Windows = ps1 and everyone else = sh?
+    toolchain_info = ctx.toolchains[Label("@fish_toolchains//:toolchain_type")].fishinfo
+
     src = ctx.attr.srcs[0].files.to_list()[0]
     output_file = ctx.actions.declare_file(ctx.label.name)
 
-    print("want:", "_main/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/fish")
-    print("got :", "_main/" + ctx.file._fish.path)
-    print("forcing fish path")
+    fish_bin_root_path = str(toolchain_info.fish_binary[DefaultInfo].files.to_list()[0].root.path)
+    fish_bin_path = str(toolchain_info.fish_binary[DefaultInfo].files.to_list()[0].path)
+
+    # TODO: this works, but don't understand the _main repo mapping. Where does this come from?
+    fish_runfile_string = fish_bin_path.replace(fish_bin_root_path, "_main")
 
     ctx.actions.expand_template(
         template = ctx.file._template,
         output = output_file,
         substitutions = {
-            # TODO: this works, but don't understand the _main repo mapping ...? Where does this come from? Also what is the best path separator?
-            # I mean, I understand this is the _main/ as part of bzlmod repo, BUT other runfiles libs don't need this - is bash runfiles lookup
-            # just in need of an update? I can't find any issues tracking this.
-            # TODO: and should srcs be handled with rlocation or is this going to work well?
             "{SRCS}": src.path,
-            # "{FISH}": "_main/" + ctx.file._fish.path,
-            # Ah you can maybe get this weird path from something like bazel cquery @fish_toolchains//pcre2:pcre2 --output=starlark
-            "{FISH}": "_main/external/_main~download_fish~fish_toolchains/fish/fish.build_tmpdir/fish",
+            "{FISH}": fish_runfile_string,
         },
     )
 
-    # TODO: this completely redundant?
     executable = output_file
     deps = [executable]
 
-    # TODO: is this the right place for srcs? It works, but semantically best?
-    fish_dependencies = [
-        ctx.file._fish,
+    bazel_fish_deps = [
         ctx.file._runfiles_bash,
         ctx.file._rlocation_bash,
         ctx.file._bazel_fish,
     ]
 
-    # print("fish_dependencies", fish_dependencies)
-    runfiles_list = ctx.files.data + ctx.files.deps + [src] + fish_dependencies
+    runfiles_list = ctx.files.data + ctx.files.deps
+    runfiles_list = runfiles_list + [src]
+    runfiles_list = runfiles_list + bazel_fish_deps
+    runfiles_list = runfiles_list + toolchain_info.fish_binary[DefaultInfo].files.to_list()
+    runfiles_list = runfiles_list + toolchain_info.fish[DefaultInfo].files.to_list()
     runfiles = ctx.runfiles(files = runfiles_list)
 
     transitive_runfiles = []
@@ -47,6 +44,7 @@ def _fish_binary_impl(ctx):
     ):
         for target in runfiles_attr:
             transitive_runfiles.append(target[DefaultInfo].default_runfiles)
+
     runfiles = runfiles.merge_all(transitive_runfiles)
 
     return [DefaultInfo(
@@ -63,20 +61,6 @@ fish_binary = rule(
         "srcs": attr.label_list(allow_files = True, mandatory = True),
         "data": attr.label_list(allow_files = True),
         "deps": attr.label_list(allow_files = True),  # TODO: enforce fish files and link these?
-        # "_fish": attr.label(
-        #     default = Label("@fish//:bin/fish"),
-        #     allow_single_file = True,
-        #     executable = True,
-        #     cfg = "exec",
-        # ),
-        "_fish": attr.label(
-            # default = Label("@fish//:bin/fish"),
-            default = Label("@fish_toolchains//fish:fish_bin"),
-            # default = Label("@fish_toolchains//fish:fish"),
-            allow_single_file = True,
-            executable = True,
-            cfg = "exec",
-        ),
         "_template": attr.label(
             default = ":fish_wrapper.sh",
             allow_single_file = True,
@@ -94,8 +78,5 @@ fish_binary = rule(
             allow_single_file = True,
         ),
     },
-    # toolchains = ["//rules_fish:toolchain_type"],
-    # TODO: HERE: replace _fish in impl with info = ctx.toolchains["@fish_toolchains//:toolchain_type"].fishinfo
-    # Will also have to implement Build with foreign_cc rules?
-    toolchains = ["@fish_toolchains//:toolchain_type"],
+    toolchains = [str(Label("@fish_toolchains//:toolchain_type"))],
 )
