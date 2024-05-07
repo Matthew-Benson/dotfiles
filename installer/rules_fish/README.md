@@ -238,3 +238,10 @@ like `rules_fish/fish_toolchain.bzl` can just be `toolchain.bzl`.
 
 Many file paths and labels will also break when this moves to another repo and will need a general
 housekeeping effort to fix all of them.
+
+## Create genrule macro
+
+Create macro `fish_genrule` that wraps genrule and maps
+cmd -> cmd, cmd_ps1, etc. and creates a wrapper similar to
+`fish_wrapper.sh` that is used by fish_binary. As much as possible,
+other kwargs should just pass through.
