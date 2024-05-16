@@ -18,11 +18,6 @@ NOTE: we also need to run that in some blank-slate container environment. Should
 
 Run simple CI on GitHub actions.
 
-## Create additional rules
-
-- fish_test
-- fish_library
-
 ## Create docs
 
 - how to run interactive and edit files interactively - this should support real targets and maybe source those files? funced -i myscript.fish? Create additional targets from fish_binary rule?
@@ -116,99 +111,6 @@ Would almost certainly need to automate this, otherwise we would
 need to maintain many manual forks where we can ensure builds work correctly.
 
 The Rust build would be much easier to automate with Gazelle.
-
-## Capture and config out_data_dirs for fish cmake build's share/ dir
-
-We need this for many builtin fish functions and completions.
-
-TODO: BLOCKING
-
-The following commands don't work currently - i.e. not found
-
-```sh
-psub
-__fish_describe_command
-echo $fish_complete_path # TODO: isn't set?
-```
-
-```sh
-ll /usr/share/fish/
-total 200K
-drwxr-xr-x 2 root root 124K Mar 30 00:49 completions/
--rw-r--r-- 1 root root 8.6K Mar 18 23:40 config.fish
--rw-r--r-- 1 root root  452 Mar 19 01:26 __fish_build_paths.fish
-drwxr-xr-x 2 root root  36K Mar 30 00:49 functions/
-drwxr-xr-x 2 root root 4.0K Mar 30 00:49 groff/
-drwxr-xr-x 3 root root 4.0K Nov 27 22:17 man/
-drwxr-xr-x 3 root root 4.0K Mar 30 00:49 tools/
-drwxr-xr-x 2 root root 4.0K Apr 10 09:05 vendor_completions.d/
-drwxr-xr-x 2 root root 4.0K Feb  2 11:24 vendor_conf.d/
-drwxr-xr-x 2 root root 4.0K Mar 25  2023 vendor_functions.d/
-```
-
-TODO: how to get share dir?
-
-```sh
-tree bazel-bin/external/_main~download_fish~fish_toolchains/fish/copy_fish/fish/ # thousands of files of output
-tree -L 3 bazel-bin/external/_main~download_fish~fish_toolchains/fish/copy_fish/fish/ # digestable output:
-
-bazel-bin/external/_main~download_fish~fish_toolchains/fish/copy_fish/fish/
-├── bin
-│   ├── fish
-│   ├── fish_indent
-│   └── fish_key_reader
-├── etc
-│   └── fish
-│       ├── completions
-│       ├── conf.d
-│       ├── config.fish
-│       └── functions
-├── include
-└── share
-    ├── applications
-    │   └── fish.desktop
-    ├── doc
-    │   └── fish
-    ├── fish
-    │   ├── completions
-    │   ├── config.fish
-    │   ├── __fish_build_paths.fish
-    │   ├── functions
-    │   ├── groff
-    │   ├── man
-    │   ├── tools
-    │   ├── vendor_completions.d
-    │   ├── vendor_conf.d
-    │   └── vendor_functions.d
-    ├── man
-    │   └── man1
-    ├── pixmaps
-    │   └── fish.png
-    └── pkgconfig
-        └── fish.pc
-
-25 directories, 9 files
-```
-
-```sh
-# default env
-INSTALLDIR=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish
-# default install dir arg
--DCMAKE_INSTALL_PREFIX=/tmp/bazel-working-directory/_main/bazel-out/k8-fastbuild/bin/external/_main~download_fish~fish_toolchains/fish/fish
-```
-
-> Ah you can maybe get this weird path from something like `bazel cquery @fish_toolchains//pcre2:pcre2 --output=starlark`.
-
-> bazel query --output=build @fish_toolchains//:all
-> OH https://bazel.build/extending/platforms
-> I think we need to pull in https://github.com/bazelbuild/platforms
-> https://github.com/bazelbuild/rules_go/blob/db019639425b18db040094fb5e34c8c8ca90c864/MODULE.bazel#L12
-> TODO: how to link the correct toolchain_type and create the platform_common.ToolchainInfo() provider?
-
-
-
-TODO: keybinds don't work either - up does nothing, tab does nothing.
-
 
 ## Add optional dependencies to fish build
 
