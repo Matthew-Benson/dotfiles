@@ -34,6 +34,7 @@ return {
   -- https://github.com/wez/wezterm/issues/4587
   underline_position = -2,
   -- TODO: temporary workaround for debian nvidia drivers on 2024-05-23
+  -- https://github.com/wez/wezterm/issues/2011
   enable_wayland = false,
   front_end = 'WebGpu',
 }
