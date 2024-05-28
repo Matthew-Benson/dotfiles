@@ -3,3 +3,10 @@
 
 # jujutsu repo directory
 .jj/
+
+# helix config directory - i.e. project specific config
+# https://artemis.sh/2023/05/08/helix-enable-cargo-features.html
+.helix/
+
+# direnv - https://direnv.net/
+.envrc
