@@ -1,4 +1,32 @@
 [[language]]
+name = "python"
+auto-format = true
+formatter = { command = "ruff format", args = [ "--stdin-filename" ] }
+
+[[language]]
+name = "jinja"
+file-types = ["jinja", { glob = "*.hubl*" }]
+
+[language-server.pylsp.config.pylsp]
+plugins.ruff.enabled = true
+plugins.black.enabled = true
+
+[[language]]
 name = "starlark"
 auto-format = true
+language-servers = [ "starlark-lsp" ]
 formatter = { command = "buildifier" }
+
+# TODO: hmm, this is all well and good and it's better than nothing, but it's not
+# a bazel lsp. There's a bazel mode for starlark CLI,
+# TODO: the bazel lsp has a help message that it's temporary and will be removed.
+# It's not feature complete and does not have momentum - the starklark LSP maintainers
+# want to move it to a separate project. A very passionate dev @cameron-martin
+# has taken it up in https://github.com/cameron-martin/bazel-lsp
+# so that may be a path forward in the future?
+[language-server.starlark-lsp]
+command = "bazel-lsp"
+# command = "starlark"
+# args = ["--bazel --lsp"]
+
+# TODO: debug adapter is starlark --dap
