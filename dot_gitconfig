@@ -15,3 +15,18 @@
 	helper = !/usr/bin/gh auth git-credential
 [core]
 	excludesFile = ~/.config/.gitignore
+	pager = delta
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    navigate = true  # use n and N to move between diff sections
+    dark = true      # or light = true, or omit for auto-detection
+	line-numbers = true
+	# width = -1 # NOTE: shouldn't need to set this.
+[merge]
+    conflictStyle = zdiff3

@@ -1,3 +1,5 @@
+"$schema" = "https://jj-vcs.github.io/jj/latest/config-schema.json"
+
 [user]
 name = "Matt Benson"
 email = "matthew.benson.developer@gmail.com"
@@ -5,3 +7,22 @@ email = "matthew.benson.developer@gmail.com"
 [ui]
 default-command = "log"
 editor = "hx"
+
+[git]
+ignore-files = ["lfs"]
+
+# Support delta diff viewer while preserving the default "jj diff".
+# https://github.com/jj-vcs/jj/discussions/4690
+
+[aliases]
+delta       = ["diff", "--tool", "delta"]
+delta-split = ["diff", "--tool", "delta", "--config", 'merge-tools.delta.diff-args=["--side-by-side", "$left", "$right", "--width=$width"]']
+
+[merge-tools.delta]
+diff-expected-exit-codes = [0, 1]
+
+[[--scope]]
+--when.commands = ["diff"]
+[--scope.ui]
+pager = "delta"
+
