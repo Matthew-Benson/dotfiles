@@ -1,2 +1,1 @@
 README.md
-installer/ # ignore bazel repo for hermetic installer utilities
