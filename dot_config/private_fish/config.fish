@@ -2,8 +2,12 @@
 
 if status is-interactive
     # Commands to run in interactive sessions can go here
-    starship init fish | source
-    atuin init fish --disable-up-arrow | source
+    if type -q direnv
+        starship init fish | source
+    end
+    if type -q atuin
+        atuin init fish --disable-up-arrow | source
+    end
 end
 
 if test -x /opt/homebrew/bin/brew
@@ -25,6 +29,6 @@ end
 # pnpm
 set -gx PNPM_HOME "/home/mbenson/.local/share/pnpm"
 if not string match -q -- $PNPM_HOME $PATH
-  set -gx PATH "$PNPM_HOME" $PATH
+    set -gx PATH "$PNPM_HOME" $PATH
 end
 # pnpm end
