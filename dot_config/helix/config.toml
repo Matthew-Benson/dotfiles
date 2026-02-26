@@ -2,10 +2,23 @@
 # https://github.com/helix-editor/helix/discussions/6963
 [editor]
 shell = ["fish", "-c"]
+line-number = "relative"
 true-color = true
+# Minimum severity to show a diagnostic after the end of a line:
+end-of-line-diagnostics = "hint"
 
 [editor.file-picker]
 hidden = false
 
 [editor.soft-wrap]
 enable = true
+
+[editor.inline-diagnostics]
+# Minimum severity to show a diagnostic on the primary cursor's line.
+# Note that `cursor-line` diagnostics are hidden in insert mode.
+cursor-line = "error"
+# Minimum severity to show a diagnostic on other lines:
+# other-lines = "error"
+
+[keys.normal]
+"'" = "copy_between_registers"

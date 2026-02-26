@@ -16,6 +16,7 @@ name = "starlark"
 auto-format = true
 language-servers = [ "starlark-lsp" ]
 formatter = { command = "buildifier" }
+file-types = ["star", "sky", "bazel", "bzl"]
 
 # TODO: hmm, this is all well and good and it's better than nothing, but it's not
 # a bazel lsp. There's a bazel mode for starlark CLI,

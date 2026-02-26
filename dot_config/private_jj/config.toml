@@ -25,4 +25,3 @@ diff-expected-exit-codes = [0, 1]
 --when.commands = ["diff"]
 [--scope.ui]
 pager = "delta"
-
